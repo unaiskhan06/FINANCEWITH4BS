@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Rates — Finance With 4B's</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #FFF8E7;
+      --accent: #E6A520;
+      --dark: #7A4A00;
+      --deep: #4A2800;
+      --muted: #9A7040;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--deep);
+      min-height: 100vh;
+      padding: 32px 24px;
+    }
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 18px;
+      border: 2px solid rgba(230,165,32,0.3);
+      box-shadow: 0 10px 30px rgba(122,74,0,0.12);
+      padding: 32px;
+    }
+    h1 {
+      font-family: 'Cinzel', serif;
+      margin: 0 0 8px;
+      font-size: 26px;
+    }
+    p {
+      margin: 0 0 20px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .meta {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      color: var(--muted);
+    }
+    input {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1.5px solid rgba(230,165,32,0.3);
+      font-size: 14px;
+    }
+    button {
+      padding: 12px 16px;
+      background: linear-gradient(135deg, var(--accent), #C88A10);
+      border: none;
+      color: #fff;
+      font-weight: 600;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .link-btn {
+      background: transparent;
+      border: 1.5px solid rgba(230,165,32,0.5);
+      color: var(--deep);
+      text-decoration: none;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .alert {
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      margin-bottom: 16px;
+    }
+    .alert.error {
+      background: rgba(220,38,38,0.12);
+      color: #dc2626;
+      border: 1px solid rgba(220,38,38,0.25);
+    }
+    .alert.success {
+      background: rgba(22,163,74,0.12);
+      color: #16a34a;
+      border: 1px solid rgba(22,163,74,0.25);
+    }
+    @media (max-width: 700px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Manual Metal Rates</h1>
+    <p>Enter the per gram rate for different gold purities, silver, and platinum. These values are shown on the public website and used for 5g, 8g, and 10g calculations.</p>
+
+    {% if rates.updated_at %}
+      <div class="meta">Last updated: {{ rates.updated_at }}</div>
+    {% else %}
+      <div class="meta">No rates saved yet.</div>
+    {% endif %}
+
+    {% if error %}
+      <div class="alert error">{{ error }}</div>
+    {% endif %}
+    {% if success %}
+      <div class="alert success">{{ success }}</div>
+    {% endif %}
+
+    <form method="post">
+      <div class="grid">
+        <div>
+          <label for="gold_24k">24K Gold per gram (₹)</label>
+          <input type="number" step="0.01" id="gold_24k" name="gold_24k" value="{{ rates.gold_24k | default('') }}" />
+        </div>
+        <div>
+          <label for="gold_22k">22K Gold per gram (₹)</label>
+          <input type="number" step="0.01" id="gold_22k" name="gold_22k" value="{{ rates.gold_22k | default('') }}" />
+        </div>
+        <div>
+          <label for="gold_18k">18K Gold per gram (₹)</label>
+          <input type="number" step="0.01" id="gold_18k" name="gold_18k" value="{{ rates.gold_18k | default('') }}" />
+        </div>
+      </div>
+
+      <div class="grid">
+        <div>
+          <label for="silver_per_gram">Silver per gram (₹)</label>
+          <input type="number" step="0.01" id="silver_per_gram" name="silver_per_gram" value="{{ rates.silver_per_gram | default('') }}" />
+        </div>
+        <div>
+          <label for="platinum_per_gram">Platinum per gram (₹)</label>
+          <input type="number" step="0.01" id="platinum_per_gram" name="platinum_per_gram" value="{{ rates.platinum_per_gram | default('') }}" />
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="submit">Save Rates</button>
+        <a class="link-btn" href="/admin/logout">Logout</a>
+      </div>
+    </form>
+  </div>
+</body>
+</html>
