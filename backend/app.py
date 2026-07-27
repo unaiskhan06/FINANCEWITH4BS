@@ -1,5 +1,11 @@
 """
 Finance With 4B's — Flask Backend
+
+Project structure:
+  backend/   → this app (Flask API + route handlers)
+  frontend/  → templates/ (HTML) and static/ (assets, config.json)
+  database/  → schema.sql (MySQL schema, applied by init_db)
+
 Endpoints:
   GET /api/gold     → Manual gold/silver/platinum rates (MySQL)
   GET /api/stocks   → Top 45 NSE Nifty 50 stocks (yfinance)
@@ -19,7 +25,16 @@ import os
 from functools import wraps
 import mysql.connector
 
-app = Flask(__name__)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+FRONTEND_DIR = os.path.join(BASE_DIR, "..", "frontend")
+DATABASE_DIR = os.path.join(BASE_DIR, "..", "database")
+SCHEMA_FILE = os.path.join(DATABASE_DIR, "schema.sql")
+
+app = Flask(
+    __name__,
+    template_folder=os.path.join(FRONTEND_DIR, "templates"),
+    static_folder=os.path.join(FRONTEND_DIR, "static"),
+)
 CORS(app)  # Allow frontend on any port to call these endpoints
 app.config["SECRET_KEY"] = os.environ.get("FLASK_SECRET_KEY", "finance-with-4bs-secret")
 
@@ -126,36 +141,38 @@ def get_db_connection(with_db=True):
     return mysql.connector.connect(**config)
 
 
+def load_schema_statements():
+    """Read database/schema.sql and split it into executable statements."""
+    with open(SCHEMA_FILE, "r", encoding="utf-8") as f:
+        raw = f.read()
+    lines = [ln for ln in raw.splitlines() if not ln.strip().startswith("--")]
+    cleaned = "\n".join(lines)
+    return [stmt.strip() for stmt in cleaned.split(";") if stmt.strip()]
+
+
 def init_db():
     global DB_READY, DB_ERROR
     db_name = MYSQL_DATABASE.replace("`", "")
     try:
+        # Create the database first (schema.sql may reference it via USE).
         conn = get_db_connection(with_db=False)
         cur = conn.cursor()
         cur.execute(f"CREATE DATABASE IF NOT EXISTS `{db_name}`")
         cur.close()
         conn.close()
 
+        # Apply the table schema from the database layer (database/schema.sql).
         conn = get_db_connection()
         cur = conn.cursor()
-        cur.execute(
-            """
-            CREATE TABLE IF NOT EXISTS metal_rates (
-                id INT PRIMARY KEY,
-                gold_24k DECIMAL(12,2) NULL,
-                gold_22k DECIMAL(12,2) NULL,
-                gold_18k DECIMAL(12,2) NULL,
-                silver_per_gram DECIMAL(12,2) NULL,
-                platinum_per_gram DECIMAL(12,2) NULL,
-                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-            )
-            """
-        )
+        for statement in load_schema_statements():
+            if statement.upper().startswith(("CREATE DATABASE", "USE")):
+                continue  # database + connection already handled above
+            cur.execute(statement)
         cur.close()
         conn.close()
         DB_READY = True
         DB_ERROR = None
-    except mysql.connector.Error as e:
+    except (mysql.connector.Error, OSError) as e:
         DB_READY = False
         DB_ERROR = str(e)
         logger.error(f"MySQL init error: {e}")

@@ -5,5 +5,5 @@ set MYSQL_USER=root
 set MYSQL_PASSWORD=root
 set MYSQL_DATABASE=finance_rates
 set MYSQL_PORT=3306
-python app.py
+python backend\app.py
 pause
