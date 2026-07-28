@@ -1857,6 +1857,7 @@
     .nav-brand span { display: none; }
   }
 </style>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/clay-theme.css') }}"/>
 </head>
 <body>
 
@@ -2096,29 +2097,69 @@
     </div>
   </div>
   <div class="hero-right">
-    <div class="hero-visual">
-      <div class="ring-outer"></div>
-      <div class="ring-mid"></div>
-      <div class="gold-center">
-        <img class="gold-center-logo" src="../static/finance-4bs-logo.png" alt="Finance With 4B's logo"/>
-        <div class="gold-center-sub">Finance</div>
+    <div class="clay-hero-rates" id="heroRates">
+      <div class="chr-head">
+        <div class="chr-title">Today's Metal Rates</div>
+        <div class="chr-live"><span class="chr-dot"></span>Live · per gram</div>
       </div>
-      <div class="orbit-item orbit-1">
-        <div class="b-letter">B</div>
-        <div class="b-label">Bullion</div>
+      <div class="chr-grid">
+        <article class="chr-card chr-feature" style="--chr-i:0">
+          <div class="chr-orb chr-o24">24K</div>
+          <div class="chr-meta">
+            <div class="chr-name">Gold 24K</div>
+            <div class="chr-sub">Pure · 999</div>
+          </div>
+          <div class="chr-right">
+            <div class="chr-price" id="heroGold24">—</div>
+            <div class="chr-chip" id="heroGold24Chg">—</div>
+          </div>
+        </article>
+        <article class="chr-card" style="--chr-i:1">
+          <div class="chr-orb chr-o22">22K</div>
+          <div class="chr-meta">
+            <div class="chr-name">Gold 22K</div>
+            <div class="chr-sub">Jewellery · 916</div>
+          </div>
+          <div class="chr-right">
+            <div class="chr-price" id="heroGold22">—</div>
+            <div class="chr-chip" id="heroGold22Chg">—</div>
+          </div>
+        </article>
+        <article class="chr-card" style="--chr-i:2">
+          <div class="chr-orb chr-o18">18K</div>
+          <div class="chr-meta">
+            <div class="chr-name">Gold 18K</div>
+            <div class="chr-sub">Studded · 750</div>
+          </div>
+          <div class="chr-right">
+            <div class="chr-price" id="heroGold18">—</div>
+            <div class="chr-chip" id="heroGold18Chg">—</div>
+          </div>
+        </article>
+        <article class="chr-card" style="--chr-i:3">
+          <div class="chr-orb chr-oag">Ag</div>
+          <div class="chr-meta">
+            <div class="chr-name">Silver</div>
+            <div class="chr-sub">Fine · 999</div>
+          </div>
+          <div class="chr-right">
+            <div class="chr-price" id="heroSilver">—</div>
+            <div class="chr-chip" id="heroSilverChg">—</div>
+          </div>
+        </article>
+        <article class="chr-card" style="--chr-i:4">
+          <div class="chr-orb chr-opt">Pt</div>
+          <div class="chr-meta">
+            <div class="chr-name">Platinum</div>
+            <div class="chr-sub">Fine · 950</div>
+          </div>
+          <div class="chr-right">
+            <div class="chr-price" id="heroPlatinum">—</div>
+            <div class="chr-chip" id="heroPlatinumChg">—</div>
+          </div>
+        </article>
       </div>
-      <div class="orbit-item orbit-2">
-        <div class="b-letter">B</div>
-        <div class="b-label">Barrel</div>
-      </div>
-      <div class="orbit-item orbit-3">
-        <div class="b-letter">B</div>
-        <div class="b-label">Board</div>
-      </div>
-      <div class="orbit-item orbit-4">
-        <div class="b-letter">B</div>
-        <div class="b-label">Bricks</div>
-      </div>
+      <div class="chr-foot" id="heroRatesFoot">Fetching latest rates…</div>
     </div>
     <span class="float-item"><svg width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#ico-ring"/></svg></span>
     <span class="float-item"><svg width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#ico-trend"/></svg></span>
@@ -3477,6 +3518,7 @@ async function fetchGold() {
     );
 
     // Update Chennai Gold Cards
+    if (window.updateHeroRates) window.updateHeroRates(data);
     updateChennaiGold(gold24k, gold22k, gold18k, data.silver);
     updateGoldLiveMeta(gold24k, data.gold_usd);
 
@@ -4366,5 +4408,6 @@ window.addEventListener('DOMContentLoaded', async () => {
   setInterval(refreshAll, 5 * 60 * 1000);
 });
 </script>
+<script src="{{ url_for('static', filename='js/clay-motion.js') }}"></script>
 </body>
 </html>
