@@ -87,11 +87,27 @@
 
   var lastRates = {};
 
-  function inr(n) {
+  function inr(n, whole) {
+    var d = whole ? 0 : 2;
     return Number(n).toLocaleString('en-IN', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
+      minimumFractionDigits: d,
+      maximumFractionDigits: d
     });
+  }
+
+  function numNode(el) {
+    var num = el.querySelector('.chr-num');
+    if (!num) {
+      el.textContent = '';
+      var cur = document.createElement('span');
+      cur.className = 'chr-cur';
+      cur.textContent = '\u20B9';
+      num = document.createElement('span');
+      num.className = 'chr-num';
+      el.appendChild(cur);
+      el.appendChild(num);
+    }
+    return num;
   }
 
   function countTo(el, to) {
@@ -99,8 +115,11 @@
     var from = typeof lastRates[el.id] === 'number' ? lastRates[el.id] : 0;
     lastRates[el.id] = to;
 
+    var whole = Math.abs(to % 1) < 0.005;
+    var num = numNode(el);
+
     if (reduce || from === to) {
-      el.textContent = '\u20B9' + inr(to);
+      num.textContent = inr(to, whole);
       return;
     }
 
@@ -112,7 +131,7 @@
       if (start === null) start = ts;
       var p = Math.min((ts - start) / dur, 1);
       var eased = p === 1 ? 1 : 1 - Math.pow(2, -10 * p);
-      el.textContent = '\u20B9' + inr(from + (to - from) * eased);
+      num.textContent = inr(from + (to - from) * eased, whole);
       if (p < 1) { el._raf = requestAnimationFrame(step); } else { el._raf = null; }
     }
     el._raf = requestAnimationFrame(step);
@@ -122,9 +141,11 @@
     if (!el) return;
     el.classList.remove('up', 'dn');
     if (typeof pct !== 'number' || isNaN(pct)) {
-      el.textContent = '—';
+      el.classList.add('chr-empty');
+      el.textContent = '';
       return;
     }
+    el.classList.remove('chr-empty');
     var up = pct >= 0;
     el.classList.add(up ? 'up' : 'dn');
     el.textContent = (up ? '\u25B2 +' : '\u25BC ') + Math.abs(pct).toFixed(2) + '%';
