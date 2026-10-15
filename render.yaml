@@ -1,10 +1,28 @@
 services:
   - type: web
     name: financewith4b-s
-    env: python
-    rootDir: backend
+    runtime: python
+    plan: free
+    # requirements.txt lives in the repo root; app.py lives in backend/.
     buildCommand: pip install -r requirements.txt
-    startCommand: python app.py
+    startCommand: gunicorn --chdir backend app:app --bind 0.0.0.0:$PORT --workers 2 --threads 4 --timeout 120
+    healthCheckPath: /
     envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.7"
       - key: PYTHONUNBUFFERED
         value: "1"
+      - key: FLASK_DEBUG
+        value: "0"
+      # Secrets are entered in the Render dashboard (Environment tab), never committed.
+      # DATABASE_URL: external database connection string, e.g.
+      #   postgresql://user:password@host:5432/dbname
+      #   mysql://user:password@host:3306/dbname
+      - key: DATABASE_URL
+        sync: false
+      - key: FLASK_SECRET_KEY
+        generateValue: true
+      - key: ADMIN_USERNAME
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false

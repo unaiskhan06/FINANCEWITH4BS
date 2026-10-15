@@ -2065,7 +2065,7 @@
 <nav>
   <a class="nav-logo" href="#">
     <div class="logo-emblem" aria-hidden="true">
-      <img src="../static/finance-4bs-logo.png" alt="Finance With 4B's logo"/>
+      <img src="{{ url_for('static', filename='finance-4bs-logo.png') }}" alt="Finance With 4B's logo"/>
     </div>
     <div class="nav-brand">
       <h1>FINANCE WITH 4B'S</h1>
@@ -2085,7 +2085,7 @@
 <!-- HERO -->
 <div class="hero">
   <video class="hero-bg-video" autoplay muted loop playsinline>
-    <source src="../static/hero-bg.mp4" type="video/mp4"/>
+    <source src="{{ url_for('static', filename='hero-bg.mp4') }}" type="video/mp4"/>
   </video>
   <div class="hero-bg-overlay"></div>
   <div class="hero-left fade-up">
@@ -3262,7 +3262,7 @@
     </div>
     <a class="youtube-card" href="https://www.youtube.com/@Financewith4Bs" target="_blank" rel="noopener">
       <div class="yt-card-logo">
-        <img src="../static/finance-4bs-logo.png" alt="Finance With 4B's logo"/>
+        <img src="{{ url_for('static', filename='finance-4bs-logo.png') }}" alt="Finance With 4B's logo"/>
       </div>
       <div class="yt-play">
         <svg width="40" height="40" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg>
@@ -3279,7 +3279,7 @@
     <div class="footer-brand">
       <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
         <div class="logo-emblem" style="width:42px; height:42px;">
-          <img src="../static/finance-4bs-logo.png" alt="Finance With 4B's logo"/>
+          <img src="{{ url_for('static', filename='finance-4bs-logo.png') }}" alt="Finance With 4B's logo"/>
         </div>
         <div>
           <div style="font-family:'Cinzel',serif; font-size:16px; font-weight:700; color:var(--card); letter-spacing:0.08em;">FINANCE WITH 4B'S</div>

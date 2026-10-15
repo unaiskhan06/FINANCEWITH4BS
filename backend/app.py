@@ -23,12 +23,36 @@ from datetime import datetime
 import logging
 import os
 from functools import wraps
-import mysql.connector
+from urllib.parse import urlparse, unquote, parse_qs
+
+try:
+    import psycopg2
+    from psycopg2.extras import RealDictCursor
+except ImportError:
+    psycopg2 = None
+    RealDictCursor = None
+
+try:
+    import mysql.connector as mysql_connector
+except ImportError:
+    mysql_connector = None
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-FRONTEND_DIR = os.path.join(BASE_DIR, "..", "frontend")
-DATABASE_DIR = os.path.join(BASE_DIR, "..", "database")
+PROJECT_DIR = os.path.dirname(BASE_DIR)
+FRONTEND_DIR = os.path.join(PROJECT_DIR, "frontend")
+DATABASE_DIR = os.path.join(PROJECT_DIR, "database")
 SCHEMA_FILE = os.path.join(DATABASE_DIR, "schema.sql")
+SCHEMA_FILE_POSTGRES = os.path.join(DATABASE_DIR, "schema_postgres.sql")
+
+# Load secrets from .env (project root, then backend/) for local development.
+# Real environment variables always win, so Render's dashboard values are never overridden.
+try:
+    from dotenv import load_dotenv
+
+    load_dotenv(os.path.join(PROJECT_DIR, ".env"))
+    load_dotenv(os.path.join(BASE_DIR, ".env"))
+except ImportError:
+    pass
 
 app = Flask(
     __name__,
@@ -36,23 +60,75 @@ app = Flask(
     static_folder=os.path.join(FRONTEND_DIR, "static"),
 )
 CORS(app)  # Allow frontend on any port to call these endpoints
-app.config["SECRET_KEY"] = os.environ.get("FLASK_SECRET_KEY", "finance-with-4bs-secret")
-
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# No hardcoded fallback: a key committed to the repo would let anyone forge an admin session.
+# Without FLASK_SECRET_KEY each process gets a random key, so admin logins reset on restart.
+SECRET_KEY = os.environ.get("FLASK_SECRET_KEY")
+if not SECRET_KEY:
+    SECRET_KEY = os.urandom(32).hex()
+    logger.warning("FLASK_SECRET_KEY is not set; using a random key (admin sessions will not persist)")
+app.config["SECRET_KEY"] = SECRET_KEY
+
 # ─── CONFIG ───────────────────────────────────────────────
-ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "finance@mujeeb")
-ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "financewithmujeeb")
+# Credentials live in .env (local) or the host's environment (Render) — never in this file.
+ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "")
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "")
+if not (ADMIN_USERNAME and ADMIN_PASSWORD):
+    logger.warning("ADMIN_USERNAME / ADMIN_PASSWORD are not set; the admin panel is locked")
+
+def env_int(name, default):
+    """Read an int env var without crashing on placeholder text like 'usually 3306'."""
+    raw = os.environ.get(name)
+    if raw is None or not str(raw).strip():
+        return default
+    digits = "".join(ch for ch in str(raw) if ch.isdigit())
+    if not digits:
+        logger.warning("Env var %s=%r is not a number; falling back to %s", name, raw, default)
+        return default
+    if digits != str(raw).strip():
+        logger.warning("Env var %s=%r is not clean; parsed as %s", name, raw, digits)
+    return int(digits)
+
+
+# Most hosts hand out a single connection string. A postgres:// URL selects PostgreSQL;
+# a mysql:// URL is unpacked into the MYSQL_* settings; with neither we use MySQL locally.
+DATABASE_URL = (os.environ.get("DATABASE_URL") or "").strip()
+USE_POSTGRES = DATABASE_URL.startswith(("postgres://", "postgresql://"))
+IS_MYSQL_URL = DATABASE_URL.startswith(("mysql://", "mysql+pymysql://", "mysql+mysqlconnector://"))
 
 MYSQL_HOST = os.environ.get("MYSQL_HOST", "localhost")
 MYSQL_USER = os.environ.get("MYSQL_USER", "root")
 MYSQL_PASSWORD = os.environ.get("MYSQL_PASSWORD", "")
 MYSQL_DATABASE = os.environ.get("MYSQL_DATABASE", "finance_rates")
-MYSQL_PORT = int(os.environ.get("MYSQL_PORT", "3306"))
+MYSQL_PORT = env_int("MYSQL_PORT", 3306)
+MYSQL_SSL = (os.environ.get("MYSQL_SSL", "") or "").strip().lower() in ("1", "true", "yes", "required")
 
-DB_READY = True
+if IS_MYSQL_URL:
+    parsed = urlparse(DATABASE_URL)
+    MYSQL_HOST = parsed.hostname or MYSQL_HOST
+    MYSQL_PORT = parsed.port or MYSQL_PORT
+    MYSQL_USER = unquote(parsed.username or "") or MYSQL_USER
+    MYSQL_PASSWORD = unquote(parsed.password or "") or MYSQL_PASSWORD
+    MYSQL_DATABASE = (parsed.path or "").lstrip("/") or MYSQL_DATABASE
+    query = parse_qs(parsed.query)
+    ssl_mode = (query.get("ssl-mode") or query.get("sslmode") or [""])[0].lower()
+    MYSQL_SSL = MYSQL_SSL or ssl_mode not in ("", "disabled", "disable")
+    # A remote managed MySQL is never localhost, so require TLS unless explicitly disabled.
+    if MYSQL_HOST not in ("localhost", "127.0.0.1") and ssl_mode not in ("disabled", "disable"):
+        MYSQL_SSL = True
+
+DB_READY = False
 DB_ERROR = None
+
+# Driver exception types, so route handlers can catch either dialect.
+DB_ERRORS = tuple(
+    exc for exc in (
+        getattr(psycopg2, "Error", None),
+        getattr(mysql_connector, "Error", None),
+    ) if exc is not None
+) + (RuntimeError, OSError)
 
 OIL_SYMBOL = "CL=F"  # WTI Crude Oil (NYMEX)
 
@@ -127,23 +203,41 @@ def safe_round(val, decimals=2):
 
 
 def get_db_connection(with_db=True):
-    if not DB_READY:
-        raise RuntimeError(f"Database not available: {DB_ERROR or 'init failed'}")
+    if USE_POSTGRES:
+        if psycopg2 is None:
+            raise RuntimeError("DATABASE_URL is set but psycopg2 is not installed")
+        conn = psycopg2.connect(DATABASE_URL, connect_timeout=10)
+        conn.autocommit = True
+        return conn
+
+    if mysql_connector is None:
+        raise RuntimeError("mysql-connector-python is not installed")
     config = {
         "host": MYSQL_HOST,
         "user": MYSQL_USER,
         "password": MYSQL_PASSWORD,
         "port": MYSQL_PORT,
         "autocommit": True,
+        "connection_timeout": 10,
     }
+    if MYSQL_SSL:
+        config["ssl_disabled"] = False
     if with_db:
         config["database"] = MYSQL_DATABASE
-    return mysql.connector.connect(**config)
+    return mysql_connector.connect(**config)
 
 
-def load_schema_statements():
-    """Read database/schema.sql and split it into executable statements."""
-    with open(SCHEMA_FILE, "r", encoding="utf-8") as f:
+def dict_cursor(conn):
+    """Return a cursor that yields dict-like rows on either driver."""
+    if USE_POSTGRES:
+        return conn.cursor(cursor_factory=RealDictCursor)
+    return conn.cursor(dictionary=True)
+
+
+def load_schema_statements(path=None):
+    """Read a schema .sql file and split it into executable statements."""
+    schema_path = path or (SCHEMA_FILE_POSTGRES if USE_POSTGRES else SCHEMA_FILE)
+    with open(schema_path, "r", encoding="utf-8") as f:
         raw = f.read()
     lines = [ln for ln in raw.splitlines() if not ln.strip().startswith("--")]
     cleaned = "\n".join(lines)
@@ -151,36 +245,60 @@ def load_schema_statements():
 
 
 def init_db():
+    """Create the table if needed. Never raises: the site must boot even if the DB is down."""
     global DB_READY, DB_ERROR
-    db_name = MYSQL_DATABASE.replace("`", "")
     try:
-        # Create the database first (schema.sql may reference it via USE).
-        conn = get_db_connection(with_db=False)
-        cur = conn.cursor()
-        cur.execute(f"CREATE DATABASE IF NOT EXISTS `{db_name}`")
-        cur.close()
-        conn.close()
+        if not USE_POSTGRES and not MYSQL_PASSWORD and MYSQL_HOST in ("localhost", "127.0.0.1"):
+            logger.warning("MYSQL_PASSWORD is empty — set it in .env if your MySQL user needs one")
+        if USE_POSTGRES:
+            # The managed database already exists; only apply the table schema.
+            conn = get_db_connection()
+            cur = conn.cursor()
+            for statement in load_schema_statements():
+                cur.execute(statement)
+            cur.close()
+            conn.close()
+        else:
+            db_name = MYSQL_DATABASE.replace("`", "")
+            # Create the database first (schema.sql may reference it via USE).
+            conn = get_db_connection(with_db=False)
+            cur = conn.cursor()
+            cur.execute(f"CREATE DATABASE IF NOT EXISTS `{db_name}`")
+            cur.close()
+            conn.close()
 
-        # Apply the table schema from the database layer (database/schema.sql).
-        conn = get_db_connection()
-        cur = conn.cursor()
-        for statement in load_schema_statements():
-            if statement.upper().startswith(("CREATE DATABASE", "USE")):
-                continue  # database + connection already handled above
-            cur.execute(statement)
-        cur.close()
-        conn.close()
+            # Apply the table schema from the database layer (database/schema.sql).
+            conn = get_db_connection()
+            cur = conn.cursor()
+            for statement in load_schema_statements():
+                if statement.upper().startswith(("CREATE DATABASE", "USE")):
+                    continue  # database + connection already handled above
+                cur.execute(statement)
+            cur.close()
+            conn.close()
+
         DB_READY = True
         DB_ERROR = None
-    except (mysql.connector.Error, OSError) as e:
+        logger.info("Database ready (%s)", "PostgreSQL" if USE_POSTGRES else "MySQL")
+    except Exception as e:
         DB_READY = False
         DB_ERROR = str(e)
-        logger.error(f"MySQL init error: {e}")
+        logger.error("Database init error (%s): %s", "PostgreSQL" if USE_POSTGRES else "MySQL", e)
+
+
+def ensure_db_ready():
+    """Retry schema init on demand: the DB may have been unreachable when the app booted
+    (common on Render, where the database can come up after the web service)."""
+    if not DB_READY:
+        init_db()
+    if not DB_READY:
+        raise RuntimeError(f"Database not available: {DB_ERROR or 'init failed'}")
 
 
 def fetch_rates():
+    ensure_db_ready()
     conn = get_db_connection()
-    cur = conn.cursor(dictionary=True)
+    cur = dict_cursor(conn)
     cur.execute(
         """
         SELECT gold_24k, gold_22k, gold_18k, silver_per_gram, platinum_per_gram, updated_at
@@ -195,8 +313,29 @@ def fetch_rates():
 
 
 def save_rates(gold_24k, gold_22k, gold_18k, silver_per_gram, platinum_per_gram):
+    ensure_db_ready()
     conn = get_db_connection()
     cur = conn.cursor()
+    if USE_POSTGRES:
+        cur.execute(
+            """
+            INSERT INTO metal_rates
+                (id, gold_24k, gold_22k, gold_18k, silver_per_gram, platinum_per_gram, updated_at)
+            VALUES (1, %s, %s, %s, %s, %s, CURRENT_TIMESTAMP)
+            ON CONFLICT (id) DO UPDATE SET
+                gold_24k = EXCLUDED.gold_24k,
+                gold_22k = EXCLUDED.gold_22k,
+                gold_18k = EXCLUDED.gold_18k,
+                silver_per_gram = EXCLUDED.silver_per_gram,
+                platinum_per_gram = EXCLUDED.platinum_per_gram,
+                updated_at = CURRENT_TIMESTAMP
+            """,
+            (gold_24k, gold_22k, gold_18k, silver_per_gram, platinum_per_gram),
+        )
+        cur.close()
+        conn.close()
+        return
+
     cur.execute(
         """
         INSERT INTO metal_rates (id, gold_24k, gold_22k, gold_18k, silver_per_gram, platinum_per_gram)
@@ -289,6 +428,13 @@ def parse_rate(value, label):
         raise ValueError(f"Invalid {label} rate.") from exc
 
 
+def db_error_message(exc):
+    """Detailed reason for the logged-in admin, so a broken deploy is diagnosable."""
+    engine = "PostgreSQL" if USE_POSTGRES else "MySQL"
+    detail = str(exc).strip().splitlines()[0] if str(exc).strip() else "unknown error"
+    return f"Database error ({engine}): {detail}"
+
+
 def admin_required(handler):
     @wraps(handler)
     def wrapper(*args, **kwargs):
@@ -317,10 +463,13 @@ def admin_login():
     if request.method == "POST":
         username = (request.form.get("username") or "").strip()
         password = request.form.get("password") or ""
-        if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
+        if not (ADMIN_USERNAME and ADMIN_PASSWORD):
+            error = "Admin credentials are not configured. Set ADMIN_USERNAME and ADMIN_PASSWORD."
+        elif username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
             session["admin_logged_in"] = True
             return redirect(url_for("admin_rates"))
-        error = "Invalid username or password."
+        else:
+            error = "Invalid username or password."
 
     return render_template("admin_login.html", error=error)
 
@@ -344,15 +493,15 @@ def admin_rates():
             success = "Rates updated successfully."
         except ValueError as e:
             error = str(e)
-        except (mysql.connector.Error, RuntimeError) as e:
-            logger.error(f"MySQL error: {e}")
-            error = "Database error. Check your MySQL connection."
+        except DB_ERRORS as e:
+            logger.error(f"Database error: {e}")
+            error = db_error_message(e)
 
     try:
         rates = fetch_rates()
-    except (mysql.connector.Error, RuntimeError) as e:
-        logger.error(f"MySQL error: {e}")
-        error = error or "Database error. Check your MySQL connection."
+    except DB_ERRORS as e:
+        logger.error(f"Database error: {e}")
+        error = error or db_error_message(e)
         rates = {}
     return render_template(
         "admin_rates.html",
@@ -377,8 +526,8 @@ def get_gold():
     try:
         rates = fetch_rates()
         return jsonify(build_manual_payload(rates))
-    except (mysql.connector.Error, RuntimeError) as e:
-        logger.error(f"MySQL error: {e}")
+    except DB_ERRORS as e:
+        logger.error(f"Database error: {e}")
         return jsonify({"status": "error", "message": "Database error"}), 500
     except Exception as e:
         logger.error(f"Manual rate error: {e}")
@@ -682,5 +831,5 @@ if __name__ == "__main__":
     print("    GET /admin/rates")
     print("="*54 + "\n")
     port = int(os.environ.get("PORT", "5000"))
-    debug = os.environ.get("FLASK_DEBUG", "1") == "1"
+    debug = os.environ.get("FLASK_DEBUG", "0") == "1"
     app.run(host="0.0.0.0", port=port, debug=debug)

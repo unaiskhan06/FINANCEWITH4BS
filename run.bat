@@ -1,9 +1,5 @@
 @echo off
-cd /d "E:\UNAIS KHAN\PROGRAMS\Finance With 4'Bs application"
-set MYSQL_HOST=localhost
-set MYSQL_USER=root
-set MYSQL_PASSWORD=root
-set MYSQL_DATABASE=finance_rates
-set MYSQL_PORT=3306
+cd /d "%~dp0"
+REM Configuration is read from the .env file in this folder (see .env.example).
 python backend\app.py
 pause
