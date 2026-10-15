@@ -454,6 +454,14 @@ def index():
     return render_template("index.html")
 
 
+@app.route("/ping")
+def ping():
+    """Lightweight health-check endpoint for UptimeRobot / uptime monitors.
+    Returns 200 OK instantly without touching the database or rendering templates.
+    """
+    return jsonify({"status": "ok"}), 200
+
+
 @app.route("/admin", methods=["GET", "POST"])
 def admin_login():
     if session.get("admin_logged_in"):
