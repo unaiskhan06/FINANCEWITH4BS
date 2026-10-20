@@ -63,6 +63,27 @@ table are created automatically on startup from `database/schema.sql`.
 
 **Note on GitHub Pages:** it is static only — the Flask admin panel and live API cannot run there.
 
+### UptimeRobot Monitoring
+
+The app exposes `GET /ping` as a lightweight availability check. It returns HTTP `200` with
+`{"status":"ok"}` without connecting to the database or calling market-data services.
+
+After the Render service has deployed:
+
+1. Sign in to [UptimeRobot](https://uptimerobot.com/) and choose **Add New Monitor**.
+2. Select **HTTP(s)** as the monitor type.
+3. Enter a descriptive name such as `Finance With 4B's`.
+4. Set the URL to your public Render URL followed by `/ping`, for example:
+   `https://financewith4b-s.onrender.com/ping`
+5. Use a 5-minute interval (or the interval available on your UptimeRobot plan), select your
+   alert contacts, and create the monitor.
+6. Open the URL in a browser or run `curl https://your-render-domain.onrender.com/ping` to verify
+   that it returns HTTP `200` before creating the monitor.
+
+Render's Blueprint health check is configured to use the same `/ping` endpoint. This monitor
+checks that the web service is reachable; it does not verify database connectivity or the
+freshness of market data.
+
 ---
 
 ## Admin Panel Usage

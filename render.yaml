@@ -6,7 +6,7 @@ services:
     # requirements.txt lives in the repo root; app.py lives in backend/.
     buildCommand: pip install -r requirements.txt
     startCommand: gunicorn --chdir backend app:app --bind 0.0.0.0:$PORT --workers 2 --threads 4 --timeout 120
-    healthCheckPath: /
+    healthCheckPath: /ping
     envVars:
       - key: PYTHON_VERSION
         value: "3.12.7"

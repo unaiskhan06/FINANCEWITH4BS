@@ -12,6 +12,7 @@ Endpoints:
   GET /api/indices  → Market indices: Sensex, Nifty 50, Bank Nifty, IT (yfinance)
   GET /api/strip    → Crude/Property strip data (yfinance + configured)
   GET /             → Serves the frontend HTML
+  GET /ping         → Lightweight health check for Render and uptime monitors
   GET /admin        → Admin login
   GET /admin/rates  → Admin rate entry
 """
