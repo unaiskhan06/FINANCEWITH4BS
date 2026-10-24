@@ -114,13 +114,17 @@ The admin panel now accepts separate rates for:
 After entering rates in admin panel:
 
 ### Gold Rates Section
-Shows three cards for each purity:
-- **24K Gold** with prices for 5g, 8g, 10g
-- **22K Gold** with prices for 5g, 8g, 10g
-- **18K Gold** with prices for 5g, 8g, 10g
+Shows four cards for each purity in this order: 1g, 8g, 10g, 100g.
+- **24K Gold**
+- **22K Gold**
+- **18K Gold**
 
 ### Silver & Platinum Sections
-Shows prices for 5g, 8g, 10g quantities
+Shows prices for 1g, 8g, 10g, and 100g quantities.
+
+Each metal also accepts a signed movement per gram in the admin panel. Positive values
+show a green upward triangle; negative values show a red downward triangle. The movement
+amount is scaled for each weight card.
 
 ### Gold Calculator
 The on-page calculator updates with your entered 24K gold rate.
@@ -140,6 +144,11 @@ CREATE TABLE metal_rates (
     gold_18k DECIMAL(12,2) NULL,
     silver_per_gram DECIMAL(12,2) NULL,
     platinum_per_gram DECIMAL(12,2) NULL,
+    gold_24k_change DECIMAL(12,2) NULL,
+    gold_22k_change DECIMAL(12,2) NULL,
+    gold_18k_change DECIMAL(12,2) NULL,
+    silver_change DECIMAL(12,2) NULL,
+    platinum_change DECIMAL(12,2) NULL,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 ```
@@ -193,7 +202,8 @@ the schema init is retried automatically on the next request.
 ## Features
 
 ✅ Manual rate entry (no external API dependency)
-✅ Automatic weight calculations (5g, 8g, 10g)
+✅ Automatic weight calculations (1g, 8g, 10g, 100g)
+✅ Per-metal up/down movement indicators
 ✅ Three gold purities (24K, 22K, 18K)
 ✅ Silver and platinum support
 ✅ Admin authentication

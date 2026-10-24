@@ -118,7 +118,7 @@
 <body>
   <div class="container">
     <h1>Manual Metal Rates</h1>
-    <p>Enter the per gram rate for different gold purities, silver, and platinum. These values are shown on the public website and used for 5g, 8g, and 10g calculations.</p>
+    <p>Enter each metal's per gram rate. You can also enter its signed movement per gram: use a positive number for an upward green triangle and a negative number for a downward red triangle. The movement is shown on every weight card on the public website.</p>
 
     {% if rates.updated_at %}
       <div class="meta">Last updated: {{ rates.updated_at }}</div>
@@ -138,14 +138,20 @@
         <div>
           <label for="gold_24k">24K Gold per gram (₹)</label>
           <input type="number" step="0.01" id="gold_24k" name="gold_24k" value="{{ rates.gold_24k | default('') }}" />
+          <label for="gold_24k_change">24K Gold movement per gram (₹)</label>
+          <input type="number" step="0.01" id="gold_24k_change" name="gold_24k_change" placeholder="e.g. -25 or 25" value="{{ rates.gold_24k_change | default('') }}" />
         </div>
         <div>
           <label for="gold_22k">22K Gold per gram (₹)</label>
           <input type="number" step="0.01" id="gold_22k" name="gold_22k" value="{{ rates.gold_22k | default('') }}" />
+          <label for="gold_22k_change">22K Gold movement per gram (₹)</label>
+          <input type="number" step="0.01" id="gold_22k_change" name="gold_22k_change" placeholder="e.g. -25 or 25" value="{{ rates.gold_22k_change | default('') }}" />
         </div>
         <div>
           <label for="gold_18k">18K Gold per gram (₹)</label>
           <input type="number" step="0.01" id="gold_18k" name="gold_18k" value="{{ rates.gold_18k | default('') }}" />
+          <label for="gold_18k_change">18K Gold movement per gram (₹)</label>
+          <input type="number" step="0.01" id="gold_18k_change" name="gold_18k_change" placeholder="e.g. -25 or 25" value="{{ rates.gold_18k_change | default('') }}" />
         </div>
       </div>
 
@@ -153,10 +159,14 @@
         <div>
           <label for="silver_per_gram">Silver per gram (₹)</label>
           <input type="number" step="0.01" id="silver_per_gram" name="silver_per_gram" value="{{ rates.silver_per_gram | default('') }}" />
+          <label for="silver_change">Silver movement per gram (₹)</label>
+          <input type="number" step="0.01" id="silver_change" name="silver_change" placeholder="e.g. -1.50 or 1.50" value="{{ rates.silver_change | default('') }}" />
         </div>
         <div>
           <label for="platinum_per_gram">Platinum per gram (₹)</label>
           <input type="number" step="0.01" id="platinum_per_gram" name="platinum_per_gram" value="{{ rates.platinum_per_gram | default('') }}" />
+          <label for="platinum_change">Platinum movement per gram (₹)</label>
+          <input type="number" step="0.01" id="platinum_change" name="platinum_change" placeholder="e.g. -50 or 50" value="{{ rates.platinum_change | default('') }}" />
         </div>
       </div>
 

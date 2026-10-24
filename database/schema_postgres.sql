@@ -16,5 +16,10 @@ CREATE TABLE IF NOT EXISTS metal_rates (
     gold_18k NUMERIC(12,2),
     silver_per_gram NUMERIC(12,2),
     platinum_per_gram NUMERIC(12,2),
+    gold_24k_change NUMERIC(12,2),
+    gold_22k_change NUMERIC(12,2),
+    gold_18k_change NUMERIC(12,2),
+    silver_change NUMERIC(12,2),
+    platinum_change NUMERIC(12,2),
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

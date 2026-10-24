@@ -82,6 +82,17 @@
     height: 72px;
     box-shadow: 0 2px 24px rgba(122,74,0,0.12);
   }
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
   .nav-logo {
     display: flex;
     align-items: center;
@@ -128,7 +139,10 @@
     list-style: none;
     margin: 0;
     padding: 0;
+    align-items: center;
+    min-width: 0;
   }
+  .nav-links li { min-width: 0; }
   .nav-links a {
     font-size: 14px;
     font-weight: 500;
@@ -155,6 +169,7 @@
     padding: 10px 22px !important;
     border-radius: 8px;
     font-weight: 600 !important;
+    white-space: nowrap;
     box-shadow: 0 4px 14px rgba(230,165,32,0.4);
     transition: all 0.2s !important;
   }
@@ -1400,10 +1415,39 @@
     .hero-right { min-height: auto; padding: 16px 0 40px; }
     .hero-visual { width: 300px; height: 300px; }
     nav { padding: 8px 24px; height: auto; flex-wrap: wrap; gap: 10px; }
-    .nav-links { display: flex; flex-wrap: wrap; gap: 18px; width: 100%; justify-content: center; }
+    .nav-links { display: flex; flex-wrap: wrap; gap: 18px; width: 100%; max-width: 100%; justify-content: center; }
     .nav-links a { font-size: 13px; }
     section, footer, .why-section, .cta-section { padding: 60px 24px; }
     .four-b-grid, .gold-grid, .chart-grid, .why-grid { grid-template-columns: 1fr; }
+    .gold-grid > *,
+    .gold-info,
+    .gold-necklace-visual,
+    .necklace-frame,
+    #gold-calc-widget {
+      min-width: 0;
+      max-width: 100%;
+    }
+    #gold-calc-widget > div[style*="grid-template-columns"] {
+      grid-template-columns: 1fr !important;
+    }
+    .gold-calc-layout {
+      grid-template-columns: 1fr !important;
+      width: 100%;
+      min-width: 0;
+    }
+    .gold-calc-layout > * {
+      min-width: 0;
+      max-width: 100%;
+    }
+    .gold-calc-layout #weightRow > div:nth-child(2),
+    .gold-calc-layout #amountRow > div:nth-child(2) {
+      flex-wrap: wrap;
+    }
+    .gold-calc-layout #qtyInput {
+      min-width: 0;
+    }
+    .necklace-inner { padding: 28px 20px; }
+    .construction-shell { padding-left: 24px; padding-right: 24px; }
     .live-strip { grid-template-columns: 1fr 1fr; padding: 32px 24px; }
     .footer-grid { grid-template-columns: 1fr 1fr; }
   }
@@ -1782,9 +1826,17 @@
     .logo-emblem { width: 44px; height: 44px; }
     .nav-brand h1 { font-size: 15px; }
     .nav-brand span { font-size: 10px; }
-    .nav-links { gap: 12px; }
+    .nav-links { gap: 8px 12px; }
     .nav-links a { font-size: 12px; }
-    .nav-cta { padding: 8px 16px !important; }
+    .nav-cta { padding: 8px 12px !important; font-size: 12px !important; }
+    section, footer, .why-section, .cta-section, .live-data-section { padding-left: 16px; padding-right: 16px; }
+    .gold-types { grid-template-columns: 1fr; }
+    .gold-necklace-visual { padding: 14px 0; }
+    .construction-shell { padding-left: 16px; padding-right: 16px; padding-bottom: 48px; }
+    .construction-grid, .results-grid, .summary-grid { grid-template-columns: 1fr; }
+    .result-wide { grid-column: auto; }
+    .construction-actions { flex-direction: column; }
+    .construction-btn { min-width: 0; width: 100%; }
     .hero-left { padding: 44px 20px 20px; }
     .hero h2 { font-size: clamp(32px, 9vw, 44px); }
     .hero-btns { flex-direction: column; align-items: stretch; }
@@ -2075,10 +2127,16 @@
   <ul class="nav-links">
     <li><a href="#four-b">The 4 B's</a></li>
     <li><a href="#live-data">Live Rates</a></li>
-    <li><a href="#gold">Gold</a></li>
-    <li><a href="#construction-calculator">Bricks</a></li>
-    <li><a href="#charts">Charts</a></li>
+    <li><a href="#gold">Gold Calculator</a></li>
+    <li><a href="#construction-calculator">Brick Calculator</a></li>
     <li><a href="#cta" class="nav-cta">Buy Gold →</a></li>
+    <li>
+      <label for="languageSelect" class="sr-only">Language</label>
+      <select id="languageSelect" aria-label="Language" onchange="setLanguage(this.value)" style="border:1px solid rgba(230,165,32,0.45); border-radius:8px; padding:7px 8px; background:rgba(255,248,231,0.1); color:var(--dark); font-family:'Inter',sans-serif; font-size:12px; font-weight:600; cursor:pointer;">
+        <option value="en">English</option>
+        <option value="ta">தமிழ்</option>
+      </select>
+    </li>
   </ul>
 </nav>
 
@@ -2245,12 +2303,6 @@
       </div>
       <div class="live-metal-card">
         <div class="lmc-karat">24K Gold</div>
-        <div class="lmc-price" id="g24p5g">—</div>
-        <div class="lmc-unit">per 5g</div>
-        <div class="lmc-change" id="g24chg5g"></div>
-      </div>
-      <div class="live-metal-card">
-        <div class="lmc-karat">24K Gold</div>
         <div class="lmc-price" id="g24p8g">—</div>
         <div class="lmc-unit">per 8g</div>
         <div class="lmc-change" id="g24chg8g"></div>
@@ -2261,18 +2313,18 @@
         <div class="lmc-unit">per 10g</div>
         <div class="lmc-change" id="g24chg10g"></div>
       </div>
+      <div class="live-metal-card">
+        <div class="lmc-karat">24K Gold</div>
+        <div class="lmc-price" id="g24p100g">—</div>
+        <div class="lmc-unit">per 100g</div>
+        <div class="lmc-change" id="g24chg100g"></div>
+      </div>
       <!-- 22K -->
       <div class="live-metal-card">
         <div class="lmc-karat">22K Gold</div>
         <div class="lmc-price" id="g22p1g">—</div>
         <div class="lmc-unit">per 1g</div>
         <div class="lmc-change" id="g22chg1g"></div>
-      </div>
-      <div class="live-metal-card">
-        <div class="lmc-karat">22K Gold</div>
-        <div class="lmc-price" id="g22p5g">—</div>
-        <div class="lmc-unit">per 5g</div>
-        <div class="lmc-change" id="g22chg5g"></div>
       </div>
       <div class="live-metal-card">
         <div class="lmc-karat">22K Gold</div>
@@ -2286,18 +2338,18 @@
         <div class="lmc-unit">per 10g</div>
         <div class="lmc-change" id="g22chg10g"></div>
       </div>
+      <div class="live-metal-card">
+        <div class="lmc-karat">22K Gold</div>
+        <div class="lmc-price" id="g22p100g">—</div>
+        <div class="lmc-unit">per 100g</div>
+        <div class="lmc-change" id="g22chg100g"></div>
+      </div>
       <!-- 18K -->
       <div class="live-metal-card">
         <div class="lmc-karat">18K Gold</div>
         <div class="lmc-price" id="g18p1g">—</div>
         <div class="lmc-unit">per 1g</div>
         <div class="lmc-change" id="g18chg1g"></div>
-      </div>
-      <div class="live-metal-card">
-        <div class="lmc-karat">18K Gold</div>
-        <div class="lmc-price" id="g18p5g">—</div>
-        <div class="lmc-unit">per 5g</div>
-        <div class="lmc-change" id="g18chg5g"></div>
       </div>
       <div class="live-metal-card">
         <div class="lmc-karat">18K Gold</div>
@@ -2311,18 +2363,18 @@
         <div class="lmc-unit">per 10g</div>
         <div class="lmc-change" id="g18chg10g"></div>
       </div>
+      <div class="live-metal-card">
+        <div class="lmc-karat">18K Gold</div>
+        <div class="lmc-price" id="g18p100g">—</div>
+        <div class="lmc-unit">per 100g</div>
+        <div class="lmc-change" id="g18chg100g"></div>
+      </div>
       <!-- Silver -->
       <div class="live-metal-card">
         <div class="lmc-karat">Silver</div>
         <div class="lmc-price" id="agp1g">—</div>
         <div class="lmc-unit">per 1g</div>
         <div class="lmc-change" id="agchg1g"></div>
-      </div>
-      <div class="live-metal-card">
-        <div class="lmc-karat">Silver</div>
-        <div class="lmc-price" id="agp5g">—</div>
-        <div class="lmc-unit">per 5g</div>
-        <div class="lmc-change" id="agchg5g"></div>
       </div>
       <div class="live-metal-card">
         <div class="lmc-karat">Silver</div>
@@ -2336,18 +2388,18 @@
         <div class="lmc-unit">per 10g</div>
         <div class="lmc-change" id="agchg10g"></div>
       </div>
+      <div class="live-metal-card">
+        <div class="lmc-karat">Silver</div>
+        <div class="lmc-price" id="agp100g">—</div>
+        <div class="lmc-unit">per 100g</div>
+        <div class="lmc-change" id="agchg100g"></div>
+      </div>
       <!-- Platinum -->
       <div class="live-metal-card">
         <div class="lmc-karat">Platinum</div>
         <div class="lmc-price" id="ptp1g">—</div>
         <div class="lmc-unit">per 1g</div>
         <div class="lmc-change" id="ptchg1g"></div>
-      </div>
-      <div class="live-metal-card">
-        <div class="lmc-karat">Platinum</div>
-        <div class="lmc-price" id="ptp5g">—</div>
-        <div class="lmc-unit">per 5g</div>
-        <div class="lmc-change" id="ptchg5g"></div>
       </div>
       <div class="live-metal-card">
         <div class="lmc-karat">Platinum</div>
@@ -2361,174 +2413,15 @@
         <div class="lmc-unit">per 10g</div>
         <div class="lmc-change" id="ptchg10g"></div>
       </div>
-    </div>
-  </div>
-
-  <!-- ── LIVE STOCK MARKET ── -->
-  <div>
-    <div class="live-stock-header">
-      <div>
-        <div class="section-eyebrow" style="justify-content:flex-start; margin-bottom:4px;">Board</div>
-        <h3 class="live-stock-header" style="border:none; padding:0; margin:0;">Live NSE/BSE <em>Stock Prices</em></h3>
-      </div>
-      <div class="stock-controls">
-        <input class="stock-search" id="stockSearch" type="text" placeholder="Search company or symbol…" oninput="filterStocks()"/>
-        <select id="sectorFilter" class="stock-search" style="width:160px;" onchange="filterStocks()">
-          <option value="">All Sectors</option>
-          <option value="IT">IT</option>
-          <option value="Banking">Banking</option>
-          <option value="Energy">Energy</option>
-          <option value="FMCG">FMCG</option>
-          <option value="Auto">Auto</option>
-          <option value="Pharma">Pharma</option>
-          <option value="Metals">Metals</option>
-          <option value="Infra">Infra</option>
-          <option value="Telecom">Telecom</option>
-        </select>
-        <button class="filter-btn active" id="filtAll"  onclick="setExchange('ALL')">All</button>
-        <button class="filter-btn"        id="filtNSE"  onclick="setExchange('NSE')">NSE</button>
-        <button class="filter-btn"        id="filtBSE"  onclick="setExchange('BSE')">BSE</button>
-        <button class="refresh-btn" id="stockRefreshBtn" onclick="fetchStocks()">
-          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-          Refresh
-        </button>
-      </div>
-    </div>
-
-    <!-- Index cards -->
-    <div class="index-cards-row" id="indexCards">
-      <div class="idx-card">
-        <div class="idx-name">Nifty 50</div>
-        <div class="idx-value" id="niftyVal">—</div>
-        <div class="idx-change" id="niftyChg"></div>
-      </div>
-      <div class="idx-card">
-        <div class="idx-name">BSE Sensex</div>
-        <div class="idx-value" id="sensexVal">—</div>
-        <div class="idx-change" id="sensexChg"></div>
-      </div>
-      <div class="idx-card">
-        <div class="idx-name">Bank Nifty</div>
-        <div class="idx-value" id="bankniftyVal">—</div>
-        <div class="idx-change" id="bankniftyChg"></div>
-      </div>
-      <div class="idx-card">
-        <div class="idx-name">Nifty IT</div>
-        <div class="idx-value" id="niftyITVal">—</div>
-        <div class="idx-change" id="niftyITChg"></div>
-      </div>
-    </div>
-
-    <!-- Stock table -->
-    <div class="stock-table-wrap">
-      <table id="stockTable">
-        <thead>
-          <tr>
-            <th onclick="sortTable('ticker')">Symbol ↕</th>
-            <th onclick="sortTable('name')">Company</th>
-            <th>Sector</th>
-            <th onclick="sortTable('price')">Price ↕</th>
-            <th onclick="sortTable('change')">Change ↕</th>
-            <th onclick="sortTable('pct')">% Change ↕</th>
-            <th onclick="sortTable('week52_high')">52W High</th>
-            <th onclick="sortTable('week52_low')">52W Low</th>
-          </tr>
-        </thead>
-        <tbody id="stockTableBody">
-          <tr class="stock-loading-row"><td colspan="8">Loading live stock data… (requires internet connection)</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <div style="margin-top:10px; font-size:11px; color:var(--muted); font-family:'Inter',sans-serif; text-align:right;">
-      <span id="stockLastUpdated" style="margin-left:10px;"></span>
-    </div>
-  </div>
-</section>
-
-<!-- FOUR B SECTION -->
-<section id="four-b">
-  <div class="section-header fade-up">
-    <div class="section-eyebrow">Your Financial Compass</div>
-    <h2 class="section-title">The Four <em>B's</em> Explained</h2>
-    <p class="section-sub">Four pillars. Four markets. One unified view of India's economic landscape — from ancient gold trading to modern digital equities.</p>
-  </div>
-  <div class="four-b-grid">
-    <div class="b-card fade-up">
-      <div class="b-card-header">
-        <div class="b-icon"><svg width="32" height="32" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#ico-bullion"/></svg></div>
-        <div>
-          <div class="b-card-title">
-            <span>B — Bullion</span>
-            Gold & Precious Metals
-          </div>
-        </div>
-      </div>
-      <p>Gold has been India's most cherished store of value for millennia. From temple offerings to wedding dowries, bullion markets track gold, silver, platinum, and palladium — both physical and futures. MCX gold is the primary Indian benchmark.</p>
-      <div class="b-stat-row">
-        <div class="b-stat"><div class="b-stat-era">1980s</div><div class="b-stat-val">₹1,330/10g</div></div>
-        <div class="b-stat"><div class="b-stat-era">1990s</div><div class="b-stat-val">₹4,200/10g</div></div>
-        <div class="b-stat"><div class="b-stat-era">2010s</div><div class="b-stat-val">₹28,000/10g</div></div>
-        <div class="b-stat"><div class="b-stat-era">Live</div><div class="b-stat-val" id="goldLiveStat10g">—</div></div>
-      </div>
-    </div>
-
-    <div class="b-card fade-up">
-      <div class="b-card-header">
-        <div class="b-icon"><svg width="32" height="32" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#ico-barrel"/></svg></div>
-        <div>
-          <div class="b-card-title">
-            <span>B — Barrel</span>
-            Petrol, Oil & Energy
-          </div>
-        </div>
-      </div>
-      <p>The oil barrel drives everything — from petrol pump prices to airline tickets and fertiliser costs. As a net oil importer, India watches Brent and WTI crude closely. The 1980s oil shock to today's OPEC+ cuts define the energy story.</p>
-      <div class="b-stat-row">
-        <div class="b-stat"><div class="b-stat-era">1980s</div><div class="b-stat-val">$15–35/bbl</div></div>
-        <div class="b-stat"><div class="b-stat-era">1990s</div><div class="b-stat-val">$16–25/bbl</div></div>
-        <div class="b-stat"><div class="b-stat-era">2010s</div><div class="b-stat-val">$60–105/bbl</div></div>
-        <div class="b-stat"><div class="b-stat-era">2024</div><div class="b-stat-val">$80–90/bbl</div></div>
-      </div>
-    </div>
-
-    <div class="b-card fade-up">
-      <div class="b-card-header">
-        <div class="b-icon"><svg width="32" height="32" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#ico-board"/></svg></div>
-        <div>
-          <div class="b-card-title">
-            <span>B — Board</span>
-            Share Market (Stock Board)
-          </div>
-        </div>
-      </div>
-      <p>The stock board — BSE Sensex and NSE Nifty 50 — represents India's corporate growth story. From a modest 100-point index in 1979 to 75,000+ today, the board rewards long-term investors with compounding wealth across bull and bear cycles.</p>
-      <div class="b-stat-row">
-        <div class="b-stat"><div class="b-stat-era">1980s</div><div class="b-stat-val">200–850</div></div>
-        <div class="b-stat"><div class="b-stat-era">1990s</div><div class="b-stat-val">1,000–5,000</div></div>
-        <div class="b-stat"><div class="b-stat-era">2010s</div><div class="b-stat-val">15,000–40K</div></div>
-        <div class="b-stat"><div class="b-stat-era">2024</div><div class="b-stat-val">74,000+</div></div>
-      </div>
-    </div>
-
-    <div class="b-card fade-up">
-      <div class="b-card-header">
-        <div class="b-icon"><svg width="32" height="32" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#ico-bricks"/></svg></div>
-        <div>
-          <div class="b-card-title">
-            <span>B — Bricks</span>
-            Real Estate & Property
-          </div>
-        </div>
-      </div>
-      <p>Real estate — "Bricks" — has been the backbone of Indian family wealth. From ₹200/sqft in suburban cities during the 1980s to ₹20,000+ in prime Mumbai today, property remains the tangible asset of choice for generations of Indian households.</p>
-      <div class="b-stat-row">
-        <div class="b-stat"><div class="b-stat-era">1980s</div><div class="b-stat-val">₹200/sqft</div></div>
-        <div class="b-stat"><div class="b-stat-era">1990s</div><div class="b-stat-val">₹800/sqft</div></div>
-        <div class="b-stat"><div class="b-stat-era">2010s</div><div class="b-stat-val">₹5,000/sqft</div></div>
-        <div class="b-stat"><div class="b-stat-era">2024</div><div class="b-stat-val">₹10,000+/sqft</div></div>
+      <div class="live-metal-card">
+        <div class="lmc-karat">Platinum</div>
+        <div class="lmc-price" id="ptp100g">—</div>
+        <div class="lmc-unit">per 100g</div>
+        <div class="lmc-change" id="ptchg100g"></div>
       </div>
     </div>
   </div>
+
 </section>
 
 <!-- GOLD SECTION -->
@@ -2650,7 +2543,7 @@
           <button id="modeAmount" onclick="setCalcMode('amount')" style="flex:1; padding:14px 10px; border:none; background:rgba(255,248,231,0.9); color:var(--muted); font-family:'Inter',sans-serif; font-size:14px; font-weight:700; cursor:pointer; letter-spacing:0.06em; border-left:1.5px solid rgba(230,165,32,0.25); transition:all 0.2s;">💰 Calculate By Amount</button>
         </div>
 
-        <div style="display:grid; grid-template-columns:1fr 1fr;">
+        <div class="gold-calc-layout" style="display:grid; grid-template-columns:1fr 1fr;">
 
           <!-- LEFT PANEL — inputs -->
           <div style="background:rgba(255,248,231,0.95); padding:28px 24px;">
@@ -2745,28 +2638,28 @@
           <div id="resultPanel" style="background:linear-gradient(160deg,#7A4A00 0%,#B8720A 60%,#7A4A00 100%); padding:28px 24px; display:flex; flex-direction:column; gap:16px;">
 
             <div>
-              <div style="font-family:'Inter',sans-serif; font-size:12px; font-weight:700; color:rgba(255,215,122,0.65); letter-spacing:0.18em; text-transform:uppercase; margin-bottom:6px;">Total Amount</div>
-              <div id="totalDisplay" style="font-family:'Cinzel',serif; font-size:34px; font-weight:700; color:#FFE566; line-height:1.1; letter-spacing:0.02em;">₹0</div>
+              <div style="font-family:'Inter',sans-serif; font-size:12px; font-weight:700; color:#fff; letter-spacing:0.18em; text-transform:uppercase; margin-bottom:6px;">Total Amount</div>
+              <div id="totalDisplay" style="font-family:'Cinzel',serif; font-size:34px; font-weight:700; color:#fff; line-height:1.1; letter-spacing:0.02em;">₹0</div>
             </div>
 
             <div style="background:rgba(255,215,122,0.12); border:1px solid rgba(255,215,122,0.2); border-radius:12px; padding:14px 16px;">
-              <div id="rateLabel" style="font-family:'Inter',sans-serif; font-size:11px; font-weight:700; color:rgba(255,215,122,0.6); letter-spacing:0.14em; text-transform:uppercase; margin-bottom:4px;">24K Current Rate</div>
-              <div id="rateDisplay" style="font-family:'Cinzel',serif; font-size:18px; font-weight:700; color:#FFD77A;">₹7,185/gram</div>
+              <div id="rateLabel" style="font-family:'Inter',sans-serif; font-size:11px; font-weight:700; color:#fff; letter-spacing:0.14em; text-transform:uppercase; margin-bottom:4px;">24K Current Rate</div>
+              <div id="rateDisplay" style="font-family:'Cinzel',serif; font-size:18px; font-weight:700; color:#fff;">₹7,185/gram</div>
             </div>
 
             <div style="background:rgba(0,0,0,0.15); border-radius:12px; padding:16px;">
-              <div style="font-family:'Inter',sans-serif; font-size:12px; font-weight:700; color:rgba(255,215,122,0.6); letter-spacing:0.14em; text-transform:uppercase; margin-bottom:12px;">Calculation Breakdown</div>
+            <div style="font-family:'Inter',sans-serif; font-size:12px; font-weight:700; color:#fff; letter-spacing:0.14em; text-transform:uppercase; margin-bottom:12px;">Calculation Breakdown</div>
               <div id="breakdownRows" style="display:flex; flex-direction:column; gap:8px; font-family:'Inter',sans-serif; font-size:13px;">
                 <!-- populated by JS -->
               </div>
             </div>
 
             <div style="background:rgba(255,215,122,0.18); border:1.5px solid rgba(255,215,122,0.35); border-radius:12px; padding:14px 16px; display:flex; justify-content:space-between; align-items:center; margin-top:auto;">
-              <div style="font-family:'Inter',sans-serif; font-size:14px; font-weight:700; color:#FFD77A; letter-spacing:0.06em;">Total Amount</div>
-              <div id="totalShort" style="font-family:'Cinzel',serif; font-size:20px; font-weight:700; color:#FFE566;"></div>
+              <div style="font-family:'Inter',sans-serif; font-size:14px; font-weight:700; color:#fff; letter-spacing:0.06em;">Total Amount</div>
+              <div id="totalShort" style="font-family:'Cinzel',serif; font-size:20px; font-weight:700; color:#fff;"></div>
             </div>
 
-            <div style="font-size:10px; color:rgba(255,215,122,0.4); font-family:'Inter',sans-serif; line-height:1.5; text-align:center;">
+            <div style="font-size:10px; color:#fff; font-family:'Inter',sans-serif; line-height:1.5; text-align:center;">
               ⚠️ Indicative rates only. Verify with MCX & local jewellers.
             </div>
           </div>
@@ -2916,315 +2809,89 @@
   </div>
 </section>
 
-<!-- HISTORY TIMELINE -->
-<section id="history" class="timeline-section">
+
+<!-- FOUR B SECTION -->
+<section id="four-b">
   <div class="section-header fade-up">
-    <div class="section-eyebrow">Four Decades of Data</div>
-    <h2 class="section-title">Market <em>History</em> — 1980s to 2026</h2>
-    <p class="section-sub">Understand how each asset class has performed across economic cycles, oil shocks, liberalisation, and global crises.</p>
+    <div class="section-eyebrow">Your Financial Compass</div>
+    <h2 class="section-title">The Four <em>B's</em> Explained</h2>
+    <p class="section-sub">Four pillars. Four markets. One unified view of India's economic landscape — from ancient gold trading to modern digital equities.</p>
   </div>
-
-  <div class="timeline-tabs">
-    <button class="tab-btn active" onclick="showTab('gold-history')"><svg width="14" height="14" style="vertical-align:-2px;margin-right:5px;stroke:currentColor" fill="none" stroke-width="1.6"><use href="#ico-bullion"/></svg>Gold Rates</button>
-    <button class="tab-btn" onclick="showTab('oil-history')"><svg width="14" height="14" style="vertical-align:-2px;margin-right:5px;stroke:currentColor" fill="none" stroke-width="1.6"><use href="#ico-barrel"/></svg>Oil / Petrol</button>
-    <button class="tab-btn" onclick="showTab('stock-history')"><svg width="14" height="14" style="vertical-align:-2px;margin-right:5px;stroke:currentColor" fill="none" stroke-width="1.6"><use href="#ico-board"/></svg>Stock Market</button>
-    <button class="tab-btn" onclick="showTab('property-history')"><svg width="14" height="14" style="vertical-align:-2px;margin-right:5px;stroke:currentColor" fill="none" stroke-width="1.6"><use href="#ico-bricks"/></svg>Real Estate</button>
-  </div>
-
-  <div id="gold-history" class="timeline-content active fade-up">
-    <div class="history-table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Era / Year</th>
-            <th>Gold 10g (₹)</th>
-            <th>Gold ($/oz USD)</th>
-            <th>Key Events</th>
-            <th>% Change (decade)</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td>Early 1980s</td><td>₹1,330</td><td>$400–$500</td><td>Gold confiscation act lifted, rising demand</td><td class="td-highlight">—</td></tr>
-          <tr><td>Late 1980s</td><td>₹3,200</td><td>$450</td><td>Pre-liberalisation; Gulf expat remittances surge</td><td class="td-highlight">+141%</td></tr>
-          <tr><td>Early 1990s</td><td>₹4,200</td><td>$360</td><td>India gold pledge during forex crisis 1991</td><td class="td-highlight">+31%</td></tr>
-          <tr><td>Late 1990s</td><td>₹4,400</td><td>$280</td><td>Gold bears — CBs selling reserves globally</td><td class="td-highlight">+5%</td></tr>
-          <tr><td>2000–2004</td><td>₹5,600</td><td>$400</td><td>Dot-com bust; safe haven demand rises</td><td class="td-highlight">+27%</td></tr>
-          <tr><td>2005–2009</td><td>₹13,000</td><td>$900</td><td>2008 Financial crisis; gold surges globally</td><td class="td-highlight">+132%</td></tr>
-          <tr><td>2010–2012</td><td>₹28,500</td><td>$1,900</td><td>All-time high (then); Eurozone crisis</td><td class="td-highlight">+119%</td></tr>
-          <tr><td>2013–2016</td><td>₹26,000</td><td>$1,200</td><td>US rate hikes; gold corrects</td><td class="td-highlight">-9%</td></tr>
-          <tr><td>2017–2019</td><td>₹32,000</td><td>$1,480</td><td>GST on gold; gradual recovery</td><td class="td-highlight">+23%</td></tr>
-          <tr><td>2020 (COVID)</td><td>₹55,000</td><td>$2,080</td><td>Pandemic safe-haven surge; new all-time high</td><td class="td-highlight">+72%</td></tr>
-          <tr><td>2021–2022</td><td>₹51,000</td><td>$1,800</td><td>Post-COVID cooling; Fed rate cycle begins</td><td class="td-highlight">-7%</td></tr>
-          <tr><td>2023–2024</td><td>₹62,000–₹72,000</td><td>$2,100–$2,400</td><td>Israel-Gaza conflict; central bank buying</td><td class="td-highlight">+37%</td></tr>
-          <tr><td><strong>Live</strong></td><td class="td-highlight"><strong id="goldHistoryLiveInr">—</strong></td><td class="td-highlight"><strong id="goldHistoryLiveUsd">—</strong></td><td>Real-time India rates via API</td><td class="td-highlight"><strong id="goldHistoryLiveChange">—</strong></td></tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <div id="oil-history" class="timeline-content fade-up">
-    <div class="history-table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Era / Year</th>
-            <th>Crude Oil ($/bbl)</th>
-            <th>Petrol India (₹/L)</th>
-            <th>Key Events</th>
-            <th>Trend</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td>1980–1985</td><td>$35</td><td>₹1.50–₹2.50</td><td>Post-1979 oil shock; Iran-Iraq war</td><td class="td-highlight">High</td></tr>
-          <tr><td>1986–1990</td><td>$15–$20</td><td>₹3.40</td><td>Oil glut; Saudi production rise</td><td class="td-highlight">↓ Drop</td></tr>
-          <tr><td>1990–1994</td><td>$20–$25</td><td>₹5.70</td><td>Gulf War; India economic reforms</td><td class="td-highlight">Steady</td></tr>
-          <tr><td>1995–1999</td><td>$10–$18</td><td>₹8.50</td><td>Asian financial crisis; oil oversupply</td><td class="td-highlight">↓ Low</td></tr>
-          <tr><td>2000–2004</td><td>$25–$40</td><td>₹28–₹35</td><td>9/11, Iraq war; OPEC cuts</td><td class="td-highlight">↑ Rising</td></tr>
-          <tr><td>2005–2008</td><td>$60–$147</td><td>₹45–₹52</td><td>Peak oil fears; China demand surge; 2008 record</td><td class="td-highlight">↑↑ Surge</td></tr>
-          <tr><td>2009–2012</td><td>$45–$110</td><td>₹50–₹70</td><td>Post-crisis recovery; Arab Spring</td><td class="td-highlight">↑ Recovery</td></tr>
-          <tr><td>2013–2016</td><td>$30–$100</td><td>₹65–₹85</td><td>Shale revolution; 2015 oil crash</td><td class="td-highlight">↓ Crash</td></tr>
-          <tr><td>2017–2019</td><td>$50–$80</td><td>₹72–₹90</td><td>OPEC+ cuts; US sanctions on Iran</td><td class="td-highlight">↑ Recovery</td></tr>
-          <tr><td>2020 (COVID)</td><td>-$37 to $20</td><td>₹71–₹80</td><td>Historic negative oil; demand collapse</td><td class="td-highlight">↓ Collapse</td></tr>
-          <tr><td>2021–2022</td><td>$80–$120</td><td>₹100–₹110</td><td>Russia-Ukraine war; supply crisis</td><td class="td-highlight">↑↑ Spike</td></tr>
-          <tr><td>2023–2024</td><td>$75–$90</td><td>₹96–₹106</td><td>OPEC+ supply management; moderate range</td><td class="td-highlight">Steady</td></tr>
-          <tr><td><strong>April 2026</strong></td><td class="td-highlight"><strong>$83</strong></td><td class="td-highlight"><strong>₹102.63</strong></td><td>Middle East tensions; transition energy push</td><td class="td-highlight">Stable</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <div id="stock-history" class="timeline-content fade-up">
-    <div class="history-table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Era / Year</th>
-            <th>BSE Sensex</th>
-            <th>NSE Nifty 50</th>
-            <th>Key Events</th>
-            <th>Notable Stocks</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td>1980–1984</td><td>100–200</td><td>—</td><td>BSE established 1875; Sensex base year 1979</td><td class="td-highlight">Reliance, Tata, ITC</td></tr>
-          <tr><td>1985–1991</td><td>200–1,000</td><td>—</td><td>Harshad Mehta era begins; market expansion</td><td class="td-highlight">Infosys IPO 1993</td></tr>
-          <tr><td>1992</td><td>4,467 peak</td><td>—</td><td>Harshad Mehta scam; massive crash</td><td class="td-highlight">−54% crash</td></tr>
-          <tr><td>1995–1999</td><td>3,000–5,100</td><td>1,050–1,500</td><td>IT boom begins; NSE Nifty launched 1995</td><td class="td-highlight">Wipro, Infosys</td></tr>
-          <tr><td>2000–2003</td><td>6,150–2,900</td><td>1,800–900</td><td>Dot-com bust; Ketan Parekh scam</td><td class="td-highlight">IT correction</td></tr>
-          <tr><td>2004–2007</td><td>5,000–20,000</td><td>1,500–6,100</td><td>India growth story; FII inflows surge</td><td class="td-highlight">+300% bull run</td></tr>
-          <tr><td>2008 (Crisis)</td><td>21,206→8,000</td><td>6,300→2,700</td><td>Lehman collapse; global financial crisis</td><td class="td-highlight">−62% crash</td></tr>
-          <tr><td>2009–2014</td><td>9,000–27,000</td><td>2,700–8,300</td><td>V-shaped recovery; UPA infrastructure push</td><td class="td-highlight">HDFC, Bharti</td></tr>
-          <tr><td>2015–2019</td><td>24,000–42,000</td><td>7,200–12,400</td><td>Modi govt; GST reforms; demonetisation dip</td><td class="td-highlight">Bajaj Finance</td></tr>
-          <tr><td>2020 (COVID)</td><td>42,000→25,600</td><td>12,400→7,600</td><td>Circuit breakers; market panic; then recovery</td><td class="td-highlight">Pharma surge</td></tr>
-          <tr><td>2021–2022</td><td>50,000–62,000</td><td>15,000–18,600</td><td>Post-COVID rally; IPO boom; Zomato, Paytm</td><td class="td-highlight">New-age IPOs</td></tr>
-          <tr><td>2023–2024</td><td>62,000–80,000</td><td>18,600–24,200</td><td>Election year rally; FII return; PSU surge</td><td class="td-highlight">PSU stocks</td></tr>
-          <tr><td><strong>April 2026</strong></td><td class="td-highlight"><strong>74,820</strong></td><td class="td-highlight"><strong>22,650</strong></td><td>Consolidation; global trade uncertainty</td><td class="td-highlight">Midcap focus</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <div id="property-history" class="timeline-content fade-up">
-    <div class="history-table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Era / Year</th>
-            <th>Mumbai (₹/sqft)</th>
-            <th>Delhi NCR (₹/sqft)</th>
-            <th>Chennai (₹/sqft)</th>
-            <th>Key Drivers</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td>1980–1985</td><td>₹200–400</td><td>₹150–300</td><td>₹80–150</td><td class="td-highlight">Rent control; DDA housing</td></tr>
-          <tr><td>1986–1991</td><td>₹600–1,200</td><td>₹400–800</td><td>₹200–400</td><td class="td-highlight">Pre-liberalisation growth</td></tr>
-          <tr><td>1992–1996</td><td>₹3,000–8,000</td><td>₹1,500–3,000</td><td>₹600–1,200</td><td class="td-highlight">Liberalisation; NRI investment</td></tr>
-          <tr><td>1997–2002</td><td>₹4,000–5,000</td><td>₹1,800–2,500</td><td>₹700–1,100</td><td class="td-highlight">Asian crisis; correction phase</td></tr>
-          <tr><td>2003–2007</td><td>₹6,000–14,000</td><td>₹2,500–6,000</td><td>₹1,500–3,500</td><td class="td-highlight">IT boom; SEZ development</td></tr>
-          <tr><td>2008–2012</td><td>₹10,000–18,000</td><td>₹4,000–8,000</td><td>₹3,000–6,000</td><td class="td-highlight">Post-crisis resilience; REIT talks</td></tr>
-          <tr><td>2013–2017</td><td>₹14,000–20,000</td><td>₹5,000–9,000</td><td>₹4,500–7,000</td><td class="td-highlight">RERA; demonetisation impact</td></tr>
-          <tr><td>2018–2020</td><td>₹15,000–18,000</td><td>₹5,500–8,000</td><td>₹4,800–6,500</td><td class="td-highlight">NBFC crisis; COVID slowdown</td></tr>
-          <tr><td>2021–2022</td><td>₹16,000–24,000</td><td>₹6,000–11,000</td><td>₹5,500–8,000</td><td class="td-highlight">Low rates; WFH demand; suburban surge</td></tr>
-          <tr><td>2023–2024</td><td>₹20,000–32,000</td><td>₹8,000–15,000</td><td>₹6,500–10,000</td><td class="td-highlight">Infra push; metro expansion; luxury boom</td></tr>
-          <tr><td><strong>April 2026</strong></td><td class="td-highlight"><strong>₹18,400 avg</strong></td><td class="td-highlight"><strong>₹9,500 avg</strong></td><td class="td-highlight"><strong>₹7,200 avg</strong></td><td class="td-highlight">Smart City; Infra.IN pipeline</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-</section>
-
-<!-- CHARTS -->
-<section id="charts" class="chart-section">
-  <div class="section-header fade-up">
-    <div class="section-eyebrow">Visual Insights</div>
-    <h2 class="section-title">Decade-by-Decade <em>Growth</em></h2>
-  </div>
-  <div class="chart-grid">
-    <div class="chart-card fade-up">
-      <h3>Gold Price Growth</h3>
-      <div class="chart-sub">₹ per 10 grams — India</div>
-      <div class="bar-chart">
-        <div class="bar-item">
-          <div class="bar-val">₹1.3K</div>
-          <div class="bar" style="height:8px;"></div>
-          <div class="bar-label">1980</div>
+  <div class="four-b-grid">
+    <div class="b-card fade-up">
+      <div class="b-card-header">
+        <div class="b-icon"><svg width="32" height="32" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#ico-bullion"/></svg></div>
+        <div>
+          <div class="b-card-title">
+            <span>B — Bullion</span>
+            Gold & Precious Metals
+          </div>
         </div>
-        <div class="bar-item">
-          <div class="bar-val">₹3.2K</div>
-          <div class="bar" style="height:14px;"></div>
-          <div class="bar-label">1990</div>
-        </div>
-        <div class="bar-item">
-          <div class="bar-val">₹4.4K</div>
-          <div class="bar" style="height:20px;"></div>
-          <div class="bar-label">2000</div>
-        </div>
-        <div class="bar-item">
-          <div class="bar-val">₹13K</div>
-          <div class="bar" style="height:40px;"></div>
-          <div class="bar-label">2007</div>
-        </div>
-        <div class="bar-item">
-          <div class="bar-val">₹28K</div>
-          <div class="bar" style="height:68px;"></div>
-          <div class="bar-label">2012</div>
-        </div>
-        <div class="bar-item">
-          <div class="bar-val">₹32K</div>
-          <div class="bar" style="height:78px;"></div>
-          <div class="bar-label">2019</div>
-        </div>
-        <div class="bar-item">
-          <div class="bar-val">₹55K</div>
-          <div class="bar" style="height:110px;"></div>
-          <div class="bar-label">2020</div>
-        </div>
-        <div class="bar-item">
-          <div class="bar-val">₹71.8K</div>
-          <div class="bar" style="height:145px; background: linear-gradient(180deg,#FFE566,#C88A10); box-shadow:0 0 12px rgba(230,165,32,0.5);"></div>
-          <div class="bar-label" style="color:var(--accent); font-weight:700;">2026</div>
-        </div>
+      </div>
+      <p>Gold has been India's most cherished store of value for millennia. From temple offerings to wedding dowries, bullion markets track gold, silver, platinum, and palladium — both physical and futures. MCX gold is the primary Indian benchmark.</p>
+      <div class="b-stat-row">
+        <div class="b-stat"><div class="b-stat-era">1980s</div><div class="b-stat-val">₹1,330/10g</div></div>
+        <div class="b-stat"><div class="b-stat-era">1990s</div><div class="b-stat-val">₹4,200/10g</div></div>
+        <div class="b-stat"><div class="b-stat-era">2010s</div><div class="b-stat-val">₹28,000/10g</div></div>
+        <div class="b-stat"><div class="b-stat-era">Live</div><div class="b-stat-val" id="goldLiveStat10g">—</div></div>
       </div>
     </div>
 
-    <div class="chart-card fade-up">
-      <h3>Sensex Growth</h3>
-      <div class="chart-sub">BSE Sensex Points</div>
-      <div class="bar-chart">
-        <div class="bar-item">
-          <div class="bar-val">200</div>
-          <div class="bar" style="height:4px;"></div>
-          <div class="bar-label">1982</div>
+    <div class="b-card fade-up">
+      <div class="b-card-header">
+        <div class="b-icon"><svg width="32" height="32" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#ico-barrel"/></svg></div>
+        <div>
+          <div class="b-card-title">
+            <span>B — Barrel</span>
+            Petrol, Oil & Energy
+          </div>
         </div>
-        <div class="bar-item">
-          <div class="bar-val">1,000</div>
-          <div class="bar" style="height:12px;"></div>
-          <div class="bar-label">1990</div>
-        </div>
-        <div class="bar-item">
-          <div class="bar-val">4,467</div>
-          <div class="bar" style="height:28px;"></div>
-          <div class="bar-label">1992</div>
-        </div>
-        <div class="bar-item">
-          <div class="bar-val">5,100</div>
-          <div class="bar" style="height:32px;"></div>
-          <div class="bar-label">2000</div>
-        </div>
-        <div class="bar-item">
-          <div class="bar-val">20K</div>
-          <div class="bar" style="height:52px;"></div>
-          <div class="bar-label">2007</div>
-        </div>
-        <div class="bar-item">
-          <div class="bar-val">42K</div>
-          <div class="bar" style="height:92px;"></div>
-          <div class="bar-label">2019</div>
-        </div>
-        <div class="bar-item">
-          <div class="bar-val">62K</div>
-          <div class="bar" style="height:120px;"></div>
-          <div class="bar-label">2022</div>
-        </div>
-        <div class="bar-item">
-          <div class="bar-val">74.8K</div>
-          <div class="bar" style="height:148px; background: linear-gradient(180deg,#FFE566,#C88A10); box-shadow:0 0 12px rgba(230,165,32,0.5);"></div>
-          <div class="bar-label" style="color:var(--accent); font-weight:700;">2026</div>
-        </div>
+      </div>
+      <p>The oil barrel drives everything — from petrol pump prices to airline tickets and fertiliser costs. As a net oil importer, India watches Brent and WTI crude closely. The 1980s oil shock to today's OPEC+ cuts define the energy story.</p>
+      <div class="b-stat-row">
+        <div class="b-stat"><div class="b-stat-era">1980s</div><div class="b-stat-val">$15–35/bbl</div></div>
+        <div class="b-stat"><div class="b-stat-era">1990s</div><div class="b-stat-val">$16–25/bbl</div></div>
+        <div class="b-stat"><div class="b-stat-era">2010s</div><div class="b-stat-val">$60–105/bbl</div></div>
+        <div class="b-stat"><div class="b-stat-era">2024</div><div class="b-stat-val">$80–90/bbl</div></div>
       </div>
     </div>
 
-    <div class="chart-card fade-up">
-      <h3>Crude Oil (WTI)</h3>
-      <div class="chart-sub">USD per Barrel</div>
-      <div class="bar-chart">
-        <div class="bar-item"><div class="bar-val">$35</div><div class="bar" style="height:58px;"></div><div class="bar-label">1980</div></div>
-        <div class="bar-item"><div class="bar-val">$17</div><div class="bar" style="height:28px;"></div><div class="bar-label">1990</div></div>
-        <div class="bar-item"><div class="bar-val">$25</div><div class="bar" style="height:42px;"></div><div class="bar-label">2000</div></div>
-        <div class="bar-item"><div class="bar-val">$60</div><div class="bar" style="height:100px;"></div><div class="bar-label">2006</div></div>
-        <div class="bar-item"><div class="bar-val">$147</div><div class="bar" style="height:155px;"></div><div class="bar-label">2008</div></div>
-        <div class="bar-item"><div class="bar-val">$100</div><div class="bar" style="height:128px;"></div><div class="bar-label">2013</div></div>
-        <div class="bar-item"><div class="bar-val">$30</div><div class="bar" style="height:50px;"></div><div class="bar-label">2020</div></div>
-        <div class="bar-item"><div class="bar-val">$83</div><div class="bar" style="height:110px; background: linear-gradient(180deg,#FFE566,#C88A10); box-shadow:0 0 12px rgba(230,165,32,0.5);"></div><div class="bar-label" style="color:var(--accent); font-weight:700;">2026</div></div>
+    <div class="b-card fade-up">
+      <div class="b-card-header">
+        <div class="b-icon"><svg width="32" height="32" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#ico-board"/></svg></div>
+        <div>
+          <div class="b-card-title">
+            <span>B — Board</span>
+            Share Market (Stock Board)
+          </div>
+        </div>
+      </div>
+      <p>The stock board — BSE Sensex and NSE Nifty 50 — represents India's corporate growth story. From a modest 100-point index in 1979 to 75,000+ today, the board rewards long-term investors with compounding wealth across bull and bear cycles.</p>
+      <div class="b-stat-row">
+        <div class="b-stat"><div class="b-stat-era">1980s</div><div class="b-stat-val">200–850</div></div>
+        <div class="b-stat"><div class="b-stat-era">1990s</div><div class="b-stat-val">1,000–5,000</div></div>
+        <div class="b-stat"><div class="b-stat-era">2010s</div><div class="b-stat-val">15,000–40K</div></div>
+        <div class="b-stat"><div class="b-stat-era">2024</div><div class="b-stat-val">74,000+</div></div>
       </div>
     </div>
 
-    <div class="chart-card fade-up">
-      <h3>Mumbai Property</h3>
-      <div class="chart-sub">₹ per sq.ft (average)</div>
-      <div class="bar-chart">
-        <div class="bar-item"><div class="bar-val">₹300</div><div class="bar" style="height:4px;"></div><div class="bar-label">1982</div></div>
-        <div class="bar-item"><div class="bar-val">₹900</div><div class="bar" style="height:10px;"></div><div class="bar-label">1990</div></div>
-        <div class="bar-item"><div class="bar-val">₹5K</div><div class="bar" style="height:22px;"></div><div class="bar-label">1996</div></div>
-        <div class="bar-item"><div class="bar-val">₹6K</div><div class="bar" style="height:28px;"></div><div class="bar-label">2003</div></div>
-        <div class="bar-item"><div class="bar-val">₹12K</div><div class="bar" style="height:52px;"></div><div class="bar-label">2008</div></div>
-        <div class="bar-item"><div class="bar-val">₹18K</div><div class="bar" style="height:78px;"></div><div class="bar-label">2014</div></div>
-        <div class="bar-item"><div class="bar-val">₹16K</div><div class="bar" style="height:70px;"></div><div class="bar-label">2020</div></div>
-        <div class="bar-item"><div class="bar-val">₹18.4K</div><div class="bar" style="height:100px; background: linear-gradient(180deg,#FFE566,#C88A10); box-shadow:0 0 12px rgba(230,165,32,0.5);"></div><div class="bar-label" style="color:var(--accent); font-weight:700;">2026</div></div>
+    <div class="b-card fade-up">
+      <div class="b-card-header">
+        <div class="b-icon"><svg width="32" height="32" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#ico-bricks"/></svg></div>
+        <div>
+          <div class="b-card-title">
+            <span>B — Bricks</span>
+            Real Estate & Property
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-</section>
-
-
-<!-- WHY 4B -->
-<section class="why-section">
-  <div class="section-header fade-up">
-    <div class="section-eyebrow">Why Choose 4B's</div>
-    <h2 class="section-title">Your Complete <em>Financial Universe</em></h2>
-    <p class="section-sub">Why savvy Indian investors track all four pillars together for a balanced portfolio view.</p>
-  </div>
-  <div class="why-grid">
-    <div class="why-card fade-up">
-      <div class="why-icon"><svg width="38" height="38" fill="none" stroke="var(--card)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#ico-signal"/></svg></div>
-      <div class="why-title">Real-Time Market Intelligence</div>
-      <div class="why-desc">Live rates across all four asset classes — gold MCX prices, crude oil WTI & Brent, Sensex/Nifty indices, and city-wise property benchmarks — all in one place.</div>
-    </div>
-    <div class="why-card fade-up">
-      <div class="why-icon"><svg width="38" height="38" fill="none" stroke="var(--card)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#ico-clock"/></svg></div>
-      <div class="why-title">40+ Years of Historical Context</div>
-      <div class="why-desc">Understand bull markets, crashes, reforms, and recoveries across four decades. Context transforms data into wisdom — making you a smarter, calmer investor.</div>
-    </div>
-    <div class="why-card fade-up">
-      <div class="why-icon"><svg width="38" height="38" fill="none" stroke="var(--card)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#ico-balance"/></svg></div>
-      <div class="why-title">Balanced Portfolio Philosophy</div>
-      <div class="why-desc">When oil rises, gold often rises. When stocks fall, gold can protect. The 4B's framework shows asset correlations so you can hedge and diversify intelligently.</div>
-    </div>
-    <div class="why-card fade-up">
-      <div class="why-icon"><svg width="38" height="38" fill="none" stroke="var(--card)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#ico-pin"/></svg></div>
-      <div class="why-title">India-Centric Insights</div>
-      <div class="why-desc">₹-denominated gold rates, city-wise property data, SENSEX & NIFTY focus, and Indian petrol pump prices — not generic US dollar data, but India's own market story.</div>
-    </div>
-    <div class="why-card fade-up">
-      <div class="why-icon"><svg width="38" height="38" fill="none" stroke="var(--card)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#ico-bulb"/></svg></div>
-      <div class="why-title">Gold Buying Guidance</div>
-      <div class="why-desc">From BIS hallmark verification to understanding making charges, karatage, SGBs vs physical gold — expert guidance to make every rupee of gold purchase count.</div>
-    </div>
-    <div class="why-card fade-up">
-      <div class="why-icon"><svg width="38" height="38" fill="none" stroke="var(--card)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#ico-mail"/></svg></div>
-      <div class="why-title">Weekly B.B.B.B. Updates</div>
-      <div class="why-desc">Curated weekly newsletter covering all four pillars — key moves, reasons behind them, and what it means for your household wealth and investment decisions.</div>
+      <p>Real estate — "Bricks" — has been the backbone of Indian family wealth. From ₹200/sqft in suburban cities during the 1980s to ₹20,000+ in prime Mumbai today, property remains the tangible asset of choice for generations of Indian households.</p>
+      <div class="b-stat-row">
+        <div class="b-stat"><div class="b-stat-era">1980s</div><div class="b-stat-val">₹200/sqft</div></div>
+        <div class="b-stat"><div class="b-stat-era">1990s</div><div class="b-stat-val">₹800/sqft</div></div>
+        <div class="b-stat"><div class="b-stat-era">2010s</div><div class="b-stat-val">₹5,000/sqft</div></div>
+        <div class="b-stat"><div class="b-stat-era">2024</div><div class="b-stat-val">₹10,000+/sqft</div></div>
+      </div>
     </div>
   </div>
 </section>
@@ -3237,7 +2904,6 @@
     <p class="cta-desc">Join thousands of Indian investors who track Bullion, Barrel, Board & Bricks together for a complete picture of financial opportunity.</p>
     <div class="cta-btns">
       <a href="#gold" class="btn-primary"><svg width="17" height="17" style="vertical-align:-3px;stroke:#fff" fill="none" stroke-width="1.6"><use href="#ico-bullion"/></svg> Check Gold Rates Today</a>
-      <a href="#history" class="btn-secondary"><svg width="17" height="17" style="vertical-align:-3px;stroke:var(--dark)" fill="none" stroke-width="1.6"><use href="#ico-board"/></svg> Explore History</a>
     </div>
     <p style="margin-top:24px; font-size:13px; color:var(--muted);">For educational &amp; informational purposes. Not financial advice. Consult a SEBI-registered advisor before investing.</p>
   </div>
@@ -3310,7 +2976,6 @@
     <div class="footer-col">
       <h4>Resources</h4>
       <ul>
-        <li><a href="#">Market History 1980–2026</a></li>
         <li><a href="#">Rate Calculator</a></li>
         <li><a href="#">Weekly Newsletter</a></li>
         <li><a href="#">About B.B.B.B.</a></li>
@@ -3344,18 +3009,18 @@ const STATIC_DATA = {
     rates_updated_at: '2026-05-12 11:00:00',
     has_rates: true,
     gold: {
-      '24K': { per_gram: 7400, per_1g: 7400, per_5g: 37000, per_8g: 59200, per_10g: 74000 },
-      '22K': { per_gram: 6800, per_1g: 6800, per_5g: 34000, per_8g: 54400, per_10g: 68000 },
-      '18K': { per_gram: 5550, per_1g: 5550, per_5g: 27750, per_8g: 44400, per_10g: 55500 },
-      '14K': { per_gram: 4300, per_1g: 4300, per_5g: 21500, per_8g: 34400, per_10g: 43000 },
+      '24K': { per_gram: 7400, per_1g: 7400, per_5g: 37000, per_8g: 59200, per_10g: 74000, per_100g: 740000, change_per_gram: 25 },
+      '22K': { per_gram: 6800, per_1g: 6800, per_5g: 34000, per_8g: 54400, per_10g: 68000, per_100g: 680000, change_per_gram: 25 },
+      '18K': { per_gram: 5550, per_1g: 5550, per_5g: 27750, per_8g: 44400, per_10g: 55500, per_100g: 555000, change_per_gram: 25 },
+      '14K': { per_gram: 4300, per_1g: 4300, per_5g: 21500, per_8g: 34400, per_10g: 43000, per_100g: 430000 },
     },
     gold_usd: { price_oz: 2350.50, change_amt: 12.30, change_pct: 0.53 },
     silver: {
-      price_per_gram: 88.30, price_per_5g: 441, price_per_8g: 706, price_per_10g: 883,
+      price_per_gram: 88.30, price_per_5g: 441, price_per_8g: 706, price_per_10g: 883, price_per_100g: 8830, change_per_gram: -1.50,
       price_per_kg: 88300, change_pct: -0.40, change_amt: -0.35,
     },
     platinum: {
-      price_per_gram: 2400, price_per_5g: 12000, price_per_8g: 19200, price_per_10g: 24000,
+      price_per_gram: 2400, price_per_5g: 12000, price_per_8g: 19200, price_per_10g: 24000, price_per_100g: 240000, change_per_gram: 50,
       price_per_kg: 2400000, change_pct: 0.20, change_amt: 4.80,
     },
   },
@@ -3449,6 +3114,7 @@ const volFmt   = n  => {
 const setStatus = msg => {
   const el = document.getElementById('liveStatusMsg');
   if (el) el.textContent = msg;
+  if (currentLanguage === 'ta') translatePage();
 };
 
 // ── GOLD RATES ─────────────────────────────────────────
@@ -3468,19 +3134,19 @@ async function fetchGold() {
     const setGramWeights = (prefix, perGram) => {
       if (perGram == null) return;
       setWeight(prefix + '1g', perGram, inrDec);
-      setWeight(prefix + '5g', perGram * 5, inrFmt);
       setWeight(prefix + '8g', perGram * 8, inrFmt);
       setWeight(prefix + '10g', perGram * 10, inrFmt);
+      setWeight(prefix + '100g', perGram * 100, inrFmt);
     };
 
-    // Update 24K Gold with 1g, 5g, 8g, 10g displays
+    // Update 24K Gold with 1g, 8g, 10g, 100g displays
     const gold24k = g['24K'];
     GOLD_RATES['24K'] = gold24k?.per_gram ?? null;
     if (gold24k) {
       setWeight('g24p1g', gold24k.per_1g, inrDec);
-      setWeight('g24p5g', gold24k.per_5g, inrFmt);
       setWeight('g24p8g', gold24k.per_8g, inrFmt);
       setWeight('g24p10g', gold24k.per_10g, inrFmt);
+      setWeight('g24p100g', gold24k.per_100g, inrFmt);
     }
 
     // Update 22K Gold
@@ -3504,24 +3170,26 @@ async function fetchGold() {
     // Silver
     if (data.silver) {
       setWeight('agp1g', data.silver.price_per_gram, inrDec);
-      setWeight('agp5g', data.silver.price_per_5g, inrFmt);
       setWeight('agp8g', data.silver.price_per_8g, inrFmt);
       setWeight('agp10g', data.silver.price_per_10g, inrFmt);
+      setWeight('agp100g', data.silver.price_per_100g, inrFmt);
     }
 
     // Platinum
     if (data.platinum) {
       setWeight('ptp1g', data.platinum.price_per_gram, inrDec);
-      setWeight('ptp5g', data.platinum.price_per_5g, inrFmt);
       setWeight('ptp8g', data.platinum.price_per_8g, inrFmt);
       setWeight('ptp10g', data.platinum.price_per_10g, inrFmt);
+      setWeight('ptp100g', data.platinum.price_per_100g, inrFmt);
     }
 
     // Update metal change labels in live cards
     updateGoldSilverChanges(
-      data.gold_usd?.change_pct,
-      data.silver?.change_pct,
-      data.platinum?.change_pct
+      gold24k?.change_per_gram,
+      gold22k?.change_per_gram,
+      gold18k?.change_per_gram,
+      data.silver?.change_per_gram,
+      data.platinum?.change_per_gram
     );
 
     // Update Chennai Gold Cards
@@ -3826,40 +3494,28 @@ function sortTable(key) {
 }
 
 // ── TICKER UPDATE ──────────────────────────────────────
-function updateGoldSilverChanges(goldChangePct, silverChangePct, platinumChangePct) {
-  const setChange = (id, pct) => {
+function updateGoldSilverChanges(gold24kChange, gold22kChange, gold18kChange, silverChange, platinumChange) {
+  const setChange = (id, change, grams) => {
     const el = document.getElementById(id);
     if (!el) return;
-    if (pct == null) {
+    if (change == null || Number(change) === 0) {
       el.textContent = '';
       el.className = 'lmc-change';
       return;
     }
-    const up = pct >= 0;
-    el.textContent = `${up ? '▲ +' : '▼ '}${Math.abs(pct).toFixed(2)}%`;
+    const up = Number(change) > 0;
+    const amount = Math.abs(Number(change) * grams);
+    el.textContent = `${up ? '▲ +' : '▼ -'}₹${amount.toFixed(2)}`;
     el.className = 'lmc-change ' + (up ? 'up' : 'dn');
   };
 
-  setChange('g24chg1g', goldChangePct);
-  setChange('g24chg5g', goldChangePct);
-  setChange('g24chg8g', goldChangePct);
-  setChange('g24chg10g', goldChangePct);
-  setChange('g22chg1g', goldChangePct);
-  setChange('g22chg5g', goldChangePct);
-  setChange('g22chg8g', goldChangePct);
-  setChange('g22chg10g', goldChangePct);
-  setChange('g18chg1g', goldChangePct);
-  setChange('g18chg5g', goldChangePct);
-  setChange('g18chg8g', goldChangePct);
-  setChange('g18chg10g', goldChangePct);
-  setChange('agchg1g', silverChangePct);
-  setChange('agchg5g', silverChangePct);
-  setChange('agchg8g', silverChangePct);
-  setChange('agchg10g', silverChangePct);
-  setChange('ptchg1g', platinumChangePct);
-  setChange('ptchg5g', platinumChangePct);
-  setChange('ptchg8g', platinumChangePct);
-  setChange('ptchg10g', platinumChangePct);
+  [[1, '1g'], [8, '8g'], [10, '10g'], [100, '100g']].forEach(([grams, weight]) => {
+    setChange('g24chg' + weight, gold24kChange, grams);
+    setChange('g22chg' + weight, gold22kChange, grams);
+    setChange('g18chg' + weight, gold18kChange, grams);
+    setChange('agchg' + weight, silverChange, grams);
+    setChange('ptchg' + weight, platinumChange, grams);
+  });
 }
 
 function updateTickerMetals(goldPer10g, goldChangePct, silverPerKg, silverChangePct) {
@@ -4017,7 +3673,7 @@ function updateGoldLiveMeta(gold24k, goldUsd) {
 // ── REFRESH ALL ────────────────────────────────────────
 async function refreshAll() {
   setStatus('Refreshing all data…');
-  await Promise.all([fetchGold(), fetchIndices(), fetchStocks(), fetchStrip()]);
+  await Promise.all([fetchGold(), fetchIndices(), fetchStrip()]);
 }
 
 // ── GOLD CALCULATOR ────────────────────────────────────
@@ -4122,8 +3778,8 @@ function recalc() {
 
   if (br) br.innerHTML = rows.map(r => `
     <div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid rgba(255,215,122,0.1);">
-      <span style="color:rgba(255,215,122,${r.bold?'0.9':'0.65'});font-weight:${r.bold?700:400};font-size:${r.bold?'13px':'12px'};">${r.label}</span>
-      <span style="color:${r.bold?'#FFE566':'#FFD77A'};font-family:'Cinzel',serif;font-weight:${r.bold?700:600};font-size:${r.bold?'14px':'13px'};">${r.val}</span>
+      <span style="color:#fff;font-weight:${r.bold?700:500};font-size:${r.bold?'13px':'12px'};">${r.label}</span>
+      <span style="color:#fff;font-family:'Cinzel',serif;font-weight:${r.bold?700:600};font-size:${r.bold?'14px':'13px'};">${r.val}</span>
     </div>`).join('');
 }
 
@@ -4394,6 +4050,162 @@ function initConstructionCalculator() {
   calculateConstruction();
 }
 
+// ── LANGUAGE SWITCHER ─────────────────────────────────
+const tamilTranslations = [
+  ['Gold Calculator', 'தங்க கணிப்பான்'],
+  ['Brick Calculator', 'செங்கல் கணிப்பான்'],
+  ['The Four Pillars Update', 'நான்கு தூண்கள் புதுப்பிப்பு'],
+  ['Market Intelligence', 'சந்தை நுண்ணறிவு'],
+  ['Bullion · Barrel · Board · Bricks', 'தங்கம் · எண்ணெய் · பங்குகள் · செங்கல்'],
+  ['Explore Gold Rates', 'தங்க விகிதங்களைப் பார்க்கவும்'],
+  ["Discover 4 B's", '4 B-களை அறியவும்'],
+  ["Today's Metal Rates", 'இன்றைய உலோக விகிதங்கள்'],
+  ['Live · per gram', 'நேரலை · ஒரு கிராம்'],
+  ['The 4 B\'s', '4 B-கள்'],
+  ['Live Rates', 'நேரலை விகிதங்கள்'],
+  ['Buy Gold →', 'தங்கம் வாங்கவும் →'],
+  ['Gold & Precious Metals', 'தங்கம் மற்றும் விலைமதிப்புள்ள உலோகங்கள்'],
+  ['Petrol, Oil & Energy', 'பெட்ரோல், எண்ணெய் மற்றும் ஆற்றல்'],
+  ['Share Market (Stock Board)', 'பங்குச் சந்தை'],
+  ['Real Estate & Property', 'ரியல் எஸ்டேட் மற்றும் சொத்து'],
+  ['Live Rates Dashboard', 'நேரலை விகிதங்கள் பலகை'],
+  ['Gold, Silver & Platinum', 'தங்கம், வெள்ளி மற்றும் பிளாட்டினம்'],
+  ['Rates in ₹', '₹ விகிதங்கள்'],
+  ['Refresh', 'புதுப்பிக்கவும்'],
+  ['per 1g', 'ஒரு 1 கிராமுக்கு'],
+  ['per 8g', 'ஒரு 8 கிராமுக்கு'],
+  ['per 10g', 'ஒரு 10 கிராமுக்கு'],
+  ['per 100g', 'ஒரு 100 கிராமுக்கு'],
+  ['The Golden Pillar', 'தங்கத் தூண்'],
+  ['Buy Gold Wisely', 'தங்கத்தை புத்திசாலித்தனமாக வாங்குங்கள்'],
+  ['Construction Material Calculator', 'கட்டுமானப் பொருள் கணிப்பான்'],
+  ['Bricks • Cement • Sand', 'செங்கல் • சிமெண்ட் • மணல்'],
+  ['Calculate By Weight', 'எடையின் அடிப்படையில் கணக்கிடு'],
+  ['Calculate By Amount', 'தொகையின் அடிப்படையில் கணக்கிடு'],
+  ['Gold Purity', 'தங்கத் தூய்மை'],
+  ['Quantity', 'அளவு'],
+  ['Gram', 'கிராம்'],
+  ['Tola', 'தோலா'],
+  ['10 Gram', '10 கிராம்'],
+  ['100 Gram', '100 கிராம்'],
+  ['Amount (₹)', 'தொகை (₹)'],
+  ['Making Charge (%)', 'செய்கூலி (%)'],
+  ['City Premium', 'நகர கூடுதல் கட்டணம்'],
+  ['Total Amount', 'மொத்த தொகை'],
+  ['Current Rate', 'தற்போதைய விகிதம்'],
+  ['24K Rate', '24K விகிதம்'],
+  ['grams', 'கிராம்கள்'],
+  ['Enter rates in the admin panel to enable the calculator.', 'கணிப்பானை இயக்க நிர்வாகப் பலகையில் விகிதங்களை உள்ளிடவும்.'],
+  ['Initializing…', 'தொடங்குகிறது…'],
+  ['Loading demo data…', 'மாதிரி தரவு ஏற்றப்படுகிறது…'],
+  ['Connecting to backend…', 'பின்தளத்துடன் இணைக்கிறது…'],
+  ['Manual rates loaded ✓', 'கைமுறை விகிதங்கள் ஏற்றப்பட்டன ✓'],
+  ['Manual rates not set', 'கைமுறை விகிதங்கள் அமைக்கப்படவில்லை'],
+  ['Rates not set yet', 'விகிதங்கள் இன்னும் அமைக்கப்படவில்லை'],
+  ['Calculation Breakdown', 'கணக்கீட்டு விவரம்'],
+  ['Weight', 'எடை'],
+  ['Rate', 'விகிதம்'],
+  ['Base Value', 'அடிப்படை மதிப்பு'],
+  ['Making Charges', 'செய்கூலி'],
+  ['Subtotal', 'கூட்டுத்தொகை'],
+  ['GST (3%)', 'GST (3%)'],
+  ['Indicative rates only. Verify with MCX & local jewellers.', 'இவை குறிப்பு விகிதங்கள் மட்டுமே. MCX மற்றும் உள்ளூர் நகைக்கடைகளில் சரிபார்க்கவும்.'],
+  ['Wall Length', 'சுவர் நீளம்'],
+  ['Wall Height', 'சுவர் உயரம்'],
+  ['Wall Thickness', 'சுவர் தடிமன்'],
+  ['Number of Walls', 'சுவர்களின் எண்ணிக்கை'],
+  ['Deduction Area', 'கழிக்க வேண்டிய பகுதி'],
+  ['Brick Type', 'செங்கல் வகை'],
+  ['Calculate Estimate', 'மதிப்பீட்டை கணக்கிடு'],
+  ['Reset', 'மீட்டமை'],
+  ['Export PDF', 'PDF ஏற்றுமதி'],
+  ['Total Bricks Required', 'தேவையான மொத்த செங்கற்கள்'],
+  ['Cement Required', 'தேவையான சிமெண்ட்'],
+  ['Cement Bags', 'சிமெண்ட் பைகள்'],
+  ['Sand Required', 'தேவையான மணல்'],
+  ['Estimated Material Cost', 'மதிப்பிடப்பட்ட பொருள் செலவு'],
+  ['Material Summary', 'பொருள் சுருக்கம்'],
+  ['Net Wall Area', 'நிகர சுவர் பகுதி'],
+  ['Wall Volume', 'சுவர் கன அளவு'],
+  ['Brick Volume', 'செங்கல் கன அளவு'],
+  ['Masonry Theme', 'கட்டுமான தோற்றம்'],
+  ['Light', 'வெளிச்சம்'],
+  ['Dark', 'இருள்'],
+  ['B.B.B.B. Market Insights', 'B.B.B.B. சந்தை தகவல்கள்'],
+  ['Manual Gold & Silver Rate — Admin Entry', 'தங்கம் மற்றும் வெள்ளி விகிதம் — நிர்வாக பதிவு'],
+  ['Rates are indicative. Verify with MCX / local jewellers for exact pricing.', 'இவை குறிப்பு விகிதங்கள். சரியான விலைக்கு MCX / உள்ளூர் நகைக்கடைகளில் சரிபார்க்கவும்.'],
+  ['Door/Window Deduction Area (sq ft)', 'கதவு/ஜன்னல் கழிப்பு பகுதி (சதுர அடி)'],
+  ['Switch to Dark Mode', 'இருள் தோற்றத்திற்கு மாற்று'],
+  ['Switch to Light Mode', 'வெளிச்ச தோற்றத்திற்கு மாற்று'],
+  ['Based on rates below.', 'கீழே உள்ள விகிதங்களின் அடிப்படையில்.'],
+  ['Includes 5% wastage.', '5% வீணாக்கமும் சேர்க்கப்பட்டுள்ளது.'],
+  ['Kilograms', 'கிலோகிராம்கள்'],
+  ['50kg per bag', 'ஒரு பைக்கு 50 கிலோ'],
+  ['Language', 'மொழி'],
+  ['Gold', 'தங்கம்'],
+  ['Silver', 'வெள்ளி'],
+  ['Platinum', 'பிளாட்டினம்'],
+  ['Bricks', 'செங்கல்'],
+  ['Cement', 'சிமெண்ட்'],
+  ['Sand', 'மணல்'],
+  ['Rate', 'விகிதம்'],
+  ['English', 'English'],
+  ['Tamil', 'தமிழ்'],
+];
+
+const tamilMap = new Map(tamilTranslations);
+const originalTextNodes = new WeakMap();
+let currentLanguage = 'en';
+
+function translatedText(text) {
+  let translated = text;
+  tamilTranslations
+    .slice()
+    .sort((a, b) => b[0].length - a[0].length)
+    .forEach(([english, tamil]) => {
+      translated = translated.split(english).join(tamil);
+    });
+  return translated;
+}
+
+function translatePage() {
+  const root = document.body;
+  if (!root) return;
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  const nodes = [];
+  let node;
+  while ((node = walker.nextNode())) {
+    if (node.parentElement?.closest('script, style, noscript, #languageSelect')) continue;
+    nodes.push(node);
+  }
+  nodes.forEach(textNode => {
+    if (!originalTextNodes.has(textNode)) originalTextNodes.set(textNode, textNode.nodeValue);
+    const original = originalTextNodes.get(textNode);
+    if (currentLanguage === 'ta') {
+      const leading = original.match(/^\s*/)[0];
+      const trailing = original.match(/\s*$/)[0];
+      const core = original.slice(leading.length, original.length - trailing.length || undefined);
+      textNode.nodeValue = leading + (tamilMap.get(core) || translatedText(core)) + trailing;
+    } else {
+      textNode.nodeValue = original;
+    }
+  });
+}
+
+function setLanguage(language) {
+  currentLanguage = language === 'ta' ? 'ta' : 'en';
+  localStorage.setItem('finance4bs-language', currentLanguage);
+  const select = document.getElementById('languageSelect');
+  if (select) select.value = currentLanguage;
+  document.documentElement.lang = currentLanguage === 'ta' ? 'ta' : 'en';
+  translatePage();
+}
+
+const languageObserver = new MutationObserver(() => {
+  if (currentLanguage === 'ta') translatePage();
+});
+languageObserver.observe(document.body, { childList: true, subtree: true });
+
 // ── SCROLL ANIMATION ───────────────────────────────────
 const observer = new IntersectionObserver(entries => {
   entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
@@ -4402,6 +4214,7 @@ document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
 
 // ── BOOT ───────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', async () => {
+  setLanguage(localStorage.getItem('finance4bs-language') || 'en');
   recalc();
   initConstructionCalculator();
   setStatus('Initializing…');

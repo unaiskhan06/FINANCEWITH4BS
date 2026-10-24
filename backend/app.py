@@ -257,6 +257,7 @@ def init_db():
             cur = conn.cursor()
             for statement in load_schema_statements():
                 cur.execute(statement)
+            ensure_change_columns(conn)
             cur.close()
             conn.close()
         else:
@@ -275,6 +276,7 @@ def init_db():
                 if statement.upper().startswith(("CREATE DATABASE", "USE")):
                     continue  # database + connection already handled above
                 cur.execute(statement)
+            ensure_change_columns(conn)
             cur.close()
             conn.close()
 
@@ -285,6 +287,41 @@ def init_db():
         DB_READY = False
         DB_ERROR = str(e)
         logger.error("Database init error (%s): %s", "PostgreSQL" if USE_POSTGRES else "MySQL", e)
+
+
+def ensure_change_columns(conn):
+    """Add movement columns to databases created before manual change tracking."""
+    columns = {
+        "gold_24k_change": "DECIMAL(12,2)",
+        "gold_22k_change": "DECIMAL(12,2)",
+        "gold_18k_change": "DECIMAL(12,2)",
+        "silver_change": "DECIMAL(12,2)",
+        "platinum_change": "DECIMAL(12,2)",
+    }
+    cur = conn.cursor()
+    if USE_POSTGRES:
+        cur.execute(
+            """
+            SELECT column_name
+            FROM information_schema.columns
+            WHERE table_schema = current_schema() AND table_name = 'metal_rates'
+            """
+        )
+    else:
+        cur.execute(
+            """
+            SELECT column_name
+            FROM information_schema.columns
+            WHERE table_schema = %s AND table_name = 'metal_rates'
+            """,
+            (MYSQL_DATABASE,),
+        )
+    existing = {row[0] for row in cur.fetchall()}
+    for name, data_type in columns.items():
+        if name not in existing:
+            quoted_name = f'"{name}"' if USE_POSTGRES else f"`{name}`"
+            cur.execute(f"ALTER TABLE metal_rates ADD COLUMN {quoted_name} {data_type} NULL")
+    cur.close()
 
 
 def ensure_db_ready():
@@ -302,7 +339,9 @@ def fetch_rates():
     cur = dict_cursor(conn)
     cur.execute(
         """
-        SELECT gold_24k, gold_22k, gold_18k, silver_per_gram, platinum_per_gram, updated_at
+        SELECT gold_24k, gold_22k, gold_18k, silver_per_gram, platinum_per_gram,
+               gold_24k_change, gold_22k_change, gold_18k_change, silver_change,
+               platinum_change, updated_at
         FROM metal_rates
         WHERE id = 1
         """
@@ -313,7 +352,18 @@ def fetch_rates():
     return row
 
 
-def save_rates(gold_24k, gold_22k, gold_18k, silver_per_gram, platinum_per_gram):
+def save_rates(
+    gold_24k,
+    gold_22k,
+    gold_18k,
+    silver_per_gram,
+    platinum_per_gram,
+    gold_24k_change,
+    gold_22k_change,
+    gold_18k_change,
+    silver_change,
+    platinum_change,
+):
     ensure_db_ready()
     conn = get_db_connection()
     cur = conn.cursor()
@@ -321,17 +371,28 @@ def save_rates(gold_24k, gold_22k, gold_18k, silver_per_gram, platinum_per_gram)
         cur.execute(
             """
             INSERT INTO metal_rates
-                (id, gold_24k, gold_22k, gold_18k, silver_per_gram, platinum_per_gram, updated_at)
-            VALUES (1, %s, %s, %s, %s, %s, CURRENT_TIMESTAMP)
+                (id, gold_24k, gold_22k, gold_18k, silver_per_gram, platinum_per_gram,
+                 gold_24k_change, gold_22k_change, gold_18k_change, silver_change,
+                 platinum_change, updated_at)
+            VALUES (1, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, CURRENT_TIMESTAMP)
             ON CONFLICT (id) DO UPDATE SET
                 gold_24k = EXCLUDED.gold_24k,
                 gold_22k = EXCLUDED.gold_22k,
                 gold_18k = EXCLUDED.gold_18k,
                 silver_per_gram = EXCLUDED.silver_per_gram,
                 platinum_per_gram = EXCLUDED.platinum_per_gram,
+                gold_24k_change = EXCLUDED.gold_24k_change,
+                gold_22k_change = EXCLUDED.gold_22k_change,
+                gold_18k_change = EXCLUDED.gold_18k_change,
+                silver_change = EXCLUDED.silver_change,
+                platinum_change = EXCLUDED.platinum_change,
                 updated_at = CURRENT_TIMESTAMP
             """,
-            (gold_24k, gold_22k, gold_18k, silver_per_gram, platinum_per_gram),
+            (
+                gold_24k, gold_22k, gold_18k, silver_per_gram, platinum_per_gram,
+                gold_24k_change, gold_22k_change, gold_18k_change, silver_change,
+                platinum_change,
+            ),
         )
         cur.close()
         conn.close()
@@ -339,26 +400,46 @@ def save_rates(gold_24k, gold_22k, gold_18k, silver_per_gram, platinum_per_gram)
 
     cur.execute(
         """
-        INSERT INTO metal_rates (id, gold_24k, gold_22k, gold_18k, silver_per_gram, platinum_per_gram)
-        VALUES (1, %s, %s, %s, %s, %s)
+        INSERT INTO metal_rates
+            (id, gold_24k, gold_22k, gold_18k, silver_per_gram, platinum_per_gram,
+             gold_24k_change, gold_22k_change, gold_18k_change, silver_change,
+             platinum_change)
+        VALUES (1, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         ON DUPLICATE KEY UPDATE
             gold_24k = VALUES(gold_24k),
             gold_22k = VALUES(gold_22k),
             gold_18k = VALUES(gold_18k),
             silver_per_gram = VALUES(silver_per_gram),
             platinum_per_gram = VALUES(platinum_per_gram),
+            gold_24k_change = VALUES(gold_24k_change),
+            gold_22k_change = VALUES(gold_22k_change),
+            gold_18k_change = VALUES(gold_18k_change),
+            silver_change = VALUES(silver_change),
+            platinum_change = VALUES(platinum_change),
             updated_at = CURRENT_TIMESTAMP
         """,
-        (gold_24k, gold_22k, gold_18k, silver_per_gram, platinum_per_gram),
+        (
+            gold_24k, gold_22k, gold_18k, silver_per_gram, platinum_per_gram,
+            gold_24k_change, gold_22k_change, gold_18k_change, silver_change,
+            platinum_change,
+        ),
     )
     cur.close()
     conn.close()
 
 
 def build_manual_payload(rates):
-    def build_weight_block(per_gram):
+    def build_weight_block(per_gram, change_per_gram):
         if per_gram is None:
-            return {"per_gram": None, "per_1g": None, "per_5g": None, "per_8g": None, "per_10g": None}
+            return {
+                "per_gram": None,
+                "per_1g": None,
+                "per_5g": None,
+                "per_8g": None,
+                "per_10g": None,
+                "per_100g": None,
+                "change_per_gram": safe_round(change_per_gram, 2),
+            }
         per_gram = safe_round(per_gram, 2)
         return {
             "per_gram": per_gram,
@@ -366,16 +447,20 @@ def build_manual_payload(rates):
             "per_5g": safe_round(per_gram * 5, 0),
             "per_8g": safe_round(per_gram * 8, 0),
             "per_10g": safe_round(per_gram * 10, 0),
+            "per_100g": safe_round(per_gram * 100, 0),
+            "change_per_gram": safe_round(change_per_gram, 2),
         }
 
-    def build_metal_block(per_gram):
+    def build_metal_block(per_gram, change_per_gram):
         if per_gram is None:
             return {
                 "price_per_gram": None,
                 "price_per_5g": None,
                 "price_per_8g": None,
                 "price_per_10g": None,
+                "price_per_100g": None,
                 "price_per_kg": None,
+                "change_per_gram": safe_round(change_per_gram, 2),
                 "change_pct": None,
                 "change_amt": None,
             }
@@ -385,7 +470,9 @@ def build_manual_payload(rates):
             "price_per_5g": safe_round(per_gram * 5, 0),
             "price_per_8g": safe_round(per_gram * 8, 0),
             "price_per_10g": safe_round(per_gram * 10, 0),
+            "price_per_100g": safe_round(per_gram * 100, 0),
             "price_per_kg": safe_round(per_gram * 1000, 0),
+            "change_per_gram": safe_round(change_per_gram, 2),
             "change_pct": None,
             "change_amt": None,
         }
@@ -395,6 +482,11 @@ def build_manual_payload(rates):
     gold_18k = rates.get("gold_18k") if rates else None
     silver_per_gram = rates.get("silver_per_gram") if rates else None
     platinum_per_gram = rates.get("platinum_per_gram") if rates else None
+    gold_24k_change = rates.get("gold_24k_change") if rates else None
+    gold_22k_change = rates.get("gold_22k_change") if rates else None
+    gold_18k_change = rates.get("gold_18k_change") if rates else None
+    silver_change = rates.get("silver_change") if rates else None
+    platinum_change = rates.get("platinum_change") if rates else None
     updated_at = rates.get("updated_at") if rates else None
     updated_at_str = updated_at.strftime("%Y-%m-%d %H:%M:%S") if updated_at else None
 
@@ -406,17 +498,17 @@ def build_manual_payload(rates):
         "rates_updated_at": updated_at_str,
         "has_rates": any(v is not None for v in [gold_24k, gold_22k, gold_18k, silver_per_gram, platinum_per_gram]),
         "gold": {
-            "24K": build_weight_block(gold_24k),
-            "22K": build_weight_block(gold_22k),
-            "18K": build_weight_block(gold_18k),
+            "24K": build_weight_block(gold_24k, gold_24k_change),
+            "22K": build_weight_block(gold_22k, gold_22k_change),
+            "18K": build_weight_block(gold_18k, gold_18k_change),
         },
         "gold_usd": {
             "price_oz": None,
             "change_amt": None,
             "change_pct": None,
         },
-        "silver": build_metal_block(silver_per_gram),
-        "platinum": build_metal_block(platinum_per_gram),
+        "silver": build_metal_block(silver_per_gram, silver_change),
+        "platinum": build_metal_block(platinum_per_gram, platinum_change),
     }
 
 
@@ -496,9 +588,23 @@ def admin_rates():
             gold_18k = parse_rate(request.form.get("gold_18k"), "18K gold")
             silver = parse_rate(request.form.get("silver_per_gram"), "silver")
             platinum = parse_rate(request.form.get("platinum_per_gram"), "platinum")
-            if gold_24k is None and gold_22k is None and gold_18k is None and silver is None and platinum is None:
-                raise ValueError("Enter at least one metal rate.")
-            save_rates(gold_24k, gold_22k, gold_18k, silver, platinum)
+            gold_24k_change = parse_rate(request.form.get("gold_24k_change"), "24K gold change")
+            gold_22k_change = parse_rate(request.form.get("gold_22k_change"), "22K gold change")
+            gold_18k_change = parse_rate(request.form.get("gold_18k_change"), "18K gold change")
+            silver_change = parse_rate(request.form.get("silver_change"), "silver change")
+            platinum_change = parse_rate(request.form.get("platinum_change"), "platinum change")
+            values = (
+                gold_24k, gold_22k, gold_18k, silver, platinum,
+                gold_24k_change, gold_22k_change, gold_18k_change,
+                silver_change, platinum_change,
+            )
+            if all(value is None for value in values):
+                raise ValueError("Enter at least one metal rate or movement amount.")
+            save_rates(
+                gold_24k, gold_22k, gold_18k, silver, platinum,
+                gold_24k_change, gold_22k_change, gold_18k_change,
+                silver_change, platinum_change,
+            )
             success = "Rates updated successfully."
         except ValueError as e:
             error = str(e)
