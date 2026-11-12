@@ -644,6 +644,82 @@
     position: relative;
     padding: 30px;
   }
+  .gold-section.calculator-only > .section-header,
+  .gold-section.calculator-only .gold-info,
+  .gold-section.calculator-only .necklace-frame,
+  .gold-section.calculator-only .necklace-frame + div {
+    display: none;
+  }
+  .gold-section.calculator-only .gold-grid {
+    display: block;
+    max-width: 1120px;
+    margin: 0 auto;
+  }
+  .gold-section.calculator-only #gold-calc-widget {
+    width: 100%;
+  }
+  .calculator-metal-selector {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .calculator-metal-btn {
+    flex: 1;
+    padding: 9px 10px;
+    border: 2px solid var(--card);
+    border-radius: 9px;
+    background: #FFF8E7;
+    color: var(--dark);
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .calculator-metal-btn.active {
+    border-color: transparent;
+    background: linear-gradient(135deg, var(--accent), #B8720A);
+    color: #fff;
+  }
+  .calculator-purity-selector {
+    display: flex;
+    gap: 8px;
+  }
+  .calculator-summary-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 24px 20px;
+    background: var(--clay-surface, #F9F1E5);
+    box-shadow: var(--clay-in);
+  }
+  .calculator-summary-title {
+    color: var(--deep);
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 800;
+  }
+  .calculator-summary-item {
+    padding: 14px;
+    border-radius: var(--clay-r-sm, 18px);
+    background: var(--clay-surface-2, #FFF8EE);
+    box-shadow: var(--clay-press);
+  }
+  .calculator-summary-label {
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .calculator-summary-value {
+    margin-top: 6px;
+    color: var(--deep);
+    font-family: 'Cinzel', serif;
+    font-size: clamp(18px, 1.8vw, 25px);
+    font-weight: 700;
+    line-height: 1.2;
+  }
   .necklace-frame {
     background: linear-gradient(135deg, #7A4A00, #E6A520, #FFF0A0, #E6A520, #7A4A00);
     border-radius: 24px;
@@ -1771,6 +1847,106 @@
     grid-template-columns: repeat(4, 1fr);
     gap: 14px;
   }
+  .live-gold-row.grouped-metal-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+  }
+  .live-metal-group {
+    padding: 18px 18px 16px;
+    border-radius: var(--clay-r, 28px);
+    background: var(--clay-surface, #F9F1E5);
+    box-shadow: var(--clay-out), var(--clay-in);
+    border-top: 4px solid var(--metal-accent, var(--accent));
+    min-width: 0;
+  }
+  .live-metal-group-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 0 2px 12px;
+    border-bottom: 1px solid color-mix(in srgb, var(--metal-accent, var(--accent)) 65%, transparent);
+  }
+  .live-metal-group-title {
+    color: var(--metal-accent, var(--accent));
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(18px, 1.6vw, 23px);
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .live-metal-group-subtitle {
+    color: var(--muted);
+    font-size: clamp(11px, 1vw, 14px);
+    margin-top: 3px;
+  }
+  .live-metal-badge {
+    flex-shrink: 0;
+    border-radius: var(--clay-r-pill, 999px);
+    padding: 5px 10px;
+    color: var(--clay-surface, #F9F1E5);
+    background: var(--metal-accent, var(--accent));
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    box-shadow: var(--clay-in);
+  }
+  .live-metal-values {
+    display: grid;
+    gap: 7px;
+    padding-top: 10px;
+  }
+  .live-metal-value {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 40px;
+    padding: 8px 11px;
+    border-radius: var(--clay-r-sm, 18px);
+    background: var(--clay-surface-2, #FFF8EE);
+    box-shadow: var(--clay-press);
+  }
+  .live-metal-value-label {
+    color: var(--muted);
+    font-size: clamp(11px, 1vw, 14px);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .live-metal-value-data {
+    display: flex;
+    align-items: baseline;
+    justify-content: flex-end;
+    gap: 8px;
+    min-width: 0;
+  }
+  .live-metal-value .lmc-price {
+    color: var(--deep);
+    font-size: clamp(18px, 1.8vw, 25px);
+    margin: 0;
+    white-space: nowrap;
+  }
+  .live-metal-value .lmc-change {
+    font-size: clamp(11px, 1vw, 14px);
+    margin: 0;
+    white-space: nowrap;
+  }
+  .live-metal-value .lmc-unit { display: none; }
+  @media (max-width: 760px) {
+    .live-gold-row.grouped-metal-grid { grid-template-columns: 1fr; }
+    .live-metal-group { padding: 16px 14px 14px; }
+    .live-metal-value { min-height: 44px; padding: 9px 10px; }
+    .live-metal-value-data { gap: 6px; }
+  }
+  @media (max-width: 420px) {
+    .live-metal-group-title { font-size: 18px; }
+    .live-metal-value-label { font-size: 10px; }
+    .live-metal-value .lmc-price { font-size: 19px; }
+    .live-metal-value .lmc-change { font-size: 10px; }
+    .live-metal-value-data { gap: 4px; }
+  }
   .lg-card {
     background: linear-gradient(135deg, rgba(255,215,122,0.5), rgba(255,248,231,0.8));
     border: 1.5px solid rgba(230,165,32,0.35);
@@ -2293,131 +2469,66 @@
         </button>
       </div>
     </div>
-    <div class="live-gold-row" id="liveGoldRow">
-      <!-- 24K -->
-      <div class="live-metal-card">
-        <div class="lmc-karat">24K Gold</div>
-        <div class="lmc-price" id="g24p1g">—</div>
-        <div class="lmc-unit">per 1g</div>
-        <div class="lmc-change" id="g24chg1g"></div>
+    <div class="live-gold-row grouped-metal-grid" id="liveGoldRow">
+      <div class="live-metal-group" style="--metal-accent:#C88712;">
+        <div class="live-metal-group-header">
+          <div><div class="live-metal-group-title">24K Gold</div><div class="live-metal-group-subtitle">Pure gold rate</div></div>
+          <span class="live-metal-badge">Gold</span>
+        </div>
+        <div class="live-metal-values">
+          <div class="live-metal-value"><span class="live-metal-value-label">1 gram</span><div class="live-metal-value-data"><div class="lmc-price" id="g24p1g">—</div><div class="lmc-change" id="g24chg1g"></div></div></div>
+          <div class="live-metal-value"><span class="live-metal-value-label">8 grams</span><div class="live-metal-value-data"><div class="lmc-price" id="g24p8g">—</div><div class="lmc-change" id="g24chg8g"></div></div></div>
+          <div class="live-metal-value"><span class="live-metal-value-label">10 grams</span><div class="live-metal-value-data"><div class="lmc-price" id="g24p10g">—</div><div class="lmc-change" id="g24chg10g"></div></div></div>
+          <div class="live-metal-value"><span class="live-metal-value-label">100 grams</span><div class="live-metal-value-data"><div class="lmc-price" id="g24p100g">—</div><div class="lmc-change" id="g24chg100g"></div></div></div>
+        </div>
       </div>
-      <div class="live-metal-card">
-        <div class="lmc-karat">24K Gold</div>
-        <div class="lmc-price" id="g24p8g">—</div>
-        <div class="lmc-unit">per 8g</div>
-        <div class="lmc-change" id="g24chg8g"></div>
+      <div class="live-metal-group" style="--metal-accent:#D67713;">
+        <div class="live-metal-group-header">
+          <div><div class="live-metal-group-title">22K Gold</div><div class="live-metal-group-subtitle">Jewellery gold rate</div></div>
+          <span class="live-metal-badge">Gold</span>
+        </div>
+        <div class="live-metal-values">
+          <div class="live-metal-value"><span class="live-metal-value-label">1 gram</span><div class="live-metal-value-data"><div class="lmc-price" id="g22p1g">—</div><div class="lmc-change" id="g22chg1g"></div></div></div>
+          <div class="live-metal-value"><span class="live-metal-value-label">8 grams</span><div class="live-metal-value-data"><div class="lmc-price" id="g22p8g">—</div><div class="lmc-change" id="g22chg8g"></div></div></div>
+          <div class="live-metal-value"><span class="live-metal-value-label">10 grams</span><div class="live-metal-value-data"><div class="lmc-price" id="g22p10g">—</div><div class="lmc-change" id="g22chg10g"></div></div></div>
+          <div class="live-metal-value"><span class="live-metal-value-label">100 grams</span><div class="live-metal-value-data"><div class="lmc-price" id="g22p100g">—</div><div class="lmc-change" id="g22chg100g"></div></div></div>
+        </div>
       </div>
-      <div class="live-metal-card">
-        <div class="lmc-karat">24K Gold</div>
-        <div class="lmc-price" id="g24p10g">—</div>
-        <div class="lmc-unit">per 10g</div>
-        <div class="lmc-change" id="g24chg10g"></div>
+      <div class="live-metal-group" style="--metal-accent:#B87918;">
+        <div class="live-metal-group-header">
+          <div><div class="live-metal-group-title">18K Gold</div><div class="live-metal-group-subtitle">Gold rate by weight</div></div>
+          <span class="live-metal-badge">Gold</span>
+        </div>
+        <div class="live-metal-values">
+          <div class="live-metal-value"><span class="live-metal-value-label">1 gram</span><div class="live-metal-value-data"><div class="lmc-price" id="g18p1g">—</div><div class="lmc-change" id="g18chg1g"></div></div></div>
+          <div class="live-metal-value"><span class="live-metal-value-label">8 grams</span><div class="live-metal-value-data"><div class="lmc-price" id="g18p8g">—</div><div class="lmc-change" id="g18chg8g"></div></div></div>
+          <div class="live-metal-value"><span class="live-metal-value-label">10 grams</span><div class="live-metal-value-data"><div class="lmc-price" id="g18p10g">—</div><div class="lmc-change" id="g18chg10g"></div></div></div>
+          <div class="live-metal-value"><span class="live-metal-value-label">100 grams</span><div class="live-metal-value-data"><div class="lmc-price" id="g18p100g">—</div><div class="lmc-change" id="g18chg100g"></div></div></div>
+        </div>
       </div>
-      <div class="live-metal-card">
-        <div class="lmc-karat">24K Gold</div>
-        <div class="lmc-price" id="g24p100g">—</div>
-        <div class="lmc-unit">per 100g</div>
-        <div class="lmc-change" id="g24chg100g"></div>
+      <div class="live-metal-group" style="--metal-accent:#3587B9;">
+        <div class="live-metal-group-header">
+          <div><div class="live-metal-group-title">Silver</div><div class="live-metal-group-subtitle">Silver rate by weight</div></div>
+          <span class="live-metal-badge">Metal</span>
+        </div>
+        <div class="live-metal-values">
+          <div class="live-metal-value"><span class="live-metal-value-label">1 gram</span><div class="live-metal-value-data"><div class="lmc-price" id="agp1g">—</div><div class="lmc-change" id="agchg1g"></div></div></div>
+          <div class="live-metal-value"><span class="live-metal-value-label">8 grams</span><div class="live-metal-value-data"><div class="lmc-price" id="agp8g">—</div><div class="lmc-change" id="agchg8g"></div></div></div>
+          <div class="live-metal-value"><span class="live-metal-value-label">10 grams</span><div class="live-metal-value-data"><div class="lmc-price" id="agp10g">—</div><div class="lmc-change" id="agchg10g"></div></div></div>
+          <div class="live-metal-value"><span class="live-metal-value-label">100 grams</span><div class="live-metal-value-data"><div class="lmc-price" id="agp100g">—</div><div class="lmc-change" id="agchg100g"></div></div></div>
+        </div>
       </div>
-      <!-- 22K -->
-      <div class="live-metal-card">
-        <div class="lmc-karat">22K Gold</div>
-        <div class="lmc-price" id="g22p1g">—</div>
-        <div class="lmc-unit">per 1g</div>
-        <div class="lmc-change" id="g22chg1g"></div>
-      </div>
-      <div class="live-metal-card">
-        <div class="lmc-karat">22K Gold</div>
-        <div class="lmc-price" id="g22p8g">—</div>
-        <div class="lmc-unit">per 8g</div>
-        <div class="lmc-change" id="g22chg8g"></div>
-      </div>
-      <div class="live-metal-card">
-        <div class="lmc-karat">22K Gold</div>
-        <div class="lmc-price" id="g22p10g">—</div>
-        <div class="lmc-unit">per 10g</div>
-        <div class="lmc-change" id="g22chg10g"></div>
-      </div>
-      <div class="live-metal-card">
-        <div class="lmc-karat">22K Gold</div>
-        <div class="lmc-price" id="g22p100g">—</div>
-        <div class="lmc-unit">per 100g</div>
-        <div class="lmc-change" id="g22chg100g"></div>
-      </div>
-      <!-- 18K -->
-      <div class="live-metal-card">
-        <div class="lmc-karat">18K Gold</div>
-        <div class="lmc-price" id="g18p1g">—</div>
-        <div class="lmc-unit">per 1g</div>
-        <div class="lmc-change" id="g18chg1g"></div>
-      </div>
-      <div class="live-metal-card">
-        <div class="lmc-karat">18K Gold</div>
-        <div class="lmc-price" id="g18p8g">—</div>
-        <div class="lmc-unit">per 8g</div>
-        <div class="lmc-change" id="g18chg8g"></div>
-      </div>
-      <div class="live-metal-card">
-        <div class="lmc-karat">18K Gold</div>
-        <div class="lmc-price" id="g18p10g">—</div>
-        <div class="lmc-unit">per 10g</div>
-        <div class="lmc-change" id="g18chg10g"></div>
-      </div>
-      <div class="live-metal-card">
-        <div class="lmc-karat">18K Gold</div>
-        <div class="lmc-price" id="g18p100g">—</div>
-        <div class="lmc-unit">per 100g</div>
-        <div class="lmc-change" id="g18chg100g"></div>
-      </div>
-      <!-- Silver -->
-      <div class="live-metal-card">
-        <div class="lmc-karat">Silver</div>
-        <div class="lmc-price" id="agp1g">—</div>
-        <div class="lmc-unit">per 1g</div>
-        <div class="lmc-change" id="agchg1g"></div>
-      </div>
-      <div class="live-metal-card">
-        <div class="lmc-karat">Silver</div>
-        <div class="lmc-price" id="agp8g">—</div>
-        <div class="lmc-unit">per 8g</div>
-        <div class="lmc-change" id="agchg8g"></div>
-      </div>
-      <div class="live-metal-card">
-        <div class="lmc-karat">Silver</div>
-        <div class="lmc-price" id="agp10g">—</div>
-        <div class="lmc-unit">per 10g</div>
-        <div class="lmc-change" id="agchg10g"></div>
-      </div>
-      <div class="live-metal-card">
-        <div class="lmc-karat">Silver</div>
-        <div class="lmc-price" id="agp100g">—</div>
-        <div class="lmc-unit">per 100g</div>
-        <div class="lmc-change" id="agchg100g"></div>
-      </div>
-      <!-- Platinum -->
-      <div class="live-metal-card">
-        <div class="lmc-karat">Platinum</div>
-        <div class="lmc-price" id="ptp1g">—</div>
-        <div class="lmc-unit">per 1g</div>
-        <div class="lmc-change" id="ptchg1g"></div>
-      </div>
-      <div class="live-metal-card">
-        <div class="lmc-karat">Platinum</div>
-        <div class="lmc-price" id="ptp8g">—</div>
-        <div class="lmc-unit">per 8g</div>
-        <div class="lmc-change" id="ptchg8g"></div>
-      </div>
-      <div class="live-metal-card">
-        <div class="lmc-karat">Platinum</div>
-        <div class="lmc-price" id="ptp10g">—</div>
-        <div class="lmc-unit">per 10g</div>
-        <div class="lmc-change" id="ptchg10g"></div>
-      </div>
-      <div class="live-metal-card">
-        <div class="lmc-karat">Platinum</div>
-        <div class="lmc-price" id="ptp100g">—</div>
-        <div class="lmc-unit">per 100g</div>
-        <div class="lmc-change" id="ptchg100g"></div>
+      <div class="live-metal-group" style="--metal-accent:#8B6B42;">
+        <div class="live-metal-group-header">
+          <div><div class="live-metal-group-title">Platinum</div><div class="live-metal-group-subtitle">Platinum rate by weight</div></div>
+          <span class="live-metal-badge">Metal</span>
+        </div>
+        <div class="live-metal-values">
+          <div class="live-metal-value"><span class="live-metal-value-label">1 gram</span><div class="live-metal-value-data"><div class="lmc-price" id="ptp1g">—</div><div class="lmc-change" id="ptchg1g"></div></div></div>
+          <div class="live-metal-value"><span class="live-metal-value-label">8 grams</span><div class="live-metal-value-data"><div class="lmc-price" id="ptp8g">—</div><div class="lmc-change" id="ptchg8g"></div></div></div>
+          <div class="live-metal-value"><span class="live-metal-value-label">10 grams</span><div class="live-metal-value-data"><div class="lmc-price" id="ptp10g">—</div><div class="lmc-change" id="ptchg10g"></div></div></div>
+          <div class="live-metal-value"><span class="live-metal-value-label">100 grams</span><div class="live-metal-value-data"><div class="lmc-price" id="ptp100g">—</div><div class="lmc-change" id="ptchg100g"></div></div></div>
+        </div>
       </div>
     </div>
   </div>
@@ -2425,7 +2536,7 @@
 </section>
 
 <!-- GOLD SECTION -->
-<section id="gold" class="gold-section">
+<section id="gold" class="gold-section calculator-only">
   <div class="section-header fade-up">
     <div class="section-eyebrow">The Golden Pillar</div>
     <h2 class="section-title">Buy Gold <em>Wisely</em></h2>
@@ -2543,19 +2654,22 @@
           <button id="modeAmount" onclick="setCalcMode('amount')" style="flex:1; padding:14px 10px; border:none; background:rgba(255,248,231,0.9); color:var(--muted); font-family:'Inter',sans-serif; font-size:14px; font-weight:700; cursor:pointer; letter-spacing:0.06em; border-left:1.5px solid rgba(230,165,32,0.25); transition:all 0.2s;">💰 Calculate By Amount</button>
         </div>
 
-        <div class="gold-calc-layout" style="display:grid; grid-template-columns:1fr 1fr;">
+        <div class="gold-calc-layout" style="display:grid; grid-template-columns:minmax(0,1.05fr) minmax(0,1fr) minmax(220px,.72fr);">
 
           <!-- LEFT PANEL — inputs -->
           <div style="background:rgba(255,248,231,0.95); padding:28px 24px;">
 
             <!-- Gold Purity -->
             <div style="margin-bottom:20px;">
-              <div style="font-family:'Inter',sans-serif; font-size:12px; font-weight:700; color:var(--muted); letter-spacing:0.12em; text-transform:uppercase; margin-bottom:10px;">Gold Purity</div>
-              <div style="display:flex; gap:8px;">
+              <div style="font-family:'Inter',sans-serif; font-size:12px; font-weight:700; color:var(--muted); letter-spacing:0.12em; text-transform:uppercase; margin-bottom:10px;">Metal</div>
+              <div class="calculator-metal-selector">
+                <button class="calculator-metal-btn active" id="metalGold" onclick="setMetal('GOLD')">Gold</button>
+                <button class="calculator-metal-btn" id="metalSilver" onclick="setMetal('SILVER')">Silver</button>
+              </div>
+              <div class="calculator-purity-selector" id="goldPurityChoices">
                 <button class="purity-btn active-purity" id="p24" onclick="setPurity('24K')" style="flex:1; padding:10px 6px; border-radius:9px; border:2px solid transparent; background:linear-gradient(135deg,var(--accent),#B8720A); color:#fff; font-family:'Cinzel',serif; font-size:14px; font-weight:700; cursor:pointer; transition:all 0.2s;">24K</button>
                 <button class="purity-btn" id="p22" onclick="setPurity('22K')" style="flex:1; padding:10px 6px; border-radius:9px; border:2px solid var(--card); background:#FFF8E7; color:var(--dark); font-family:'Cinzel',serif; font-size:14px; font-weight:700; cursor:pointer; transition:all 0.2s;">22K</button>
                 <button class="purity-btn" id="p18" onclick="setPurity('18K')" style="flex:1; padding:10px 6px; border-radius:9px; border:2px solid var(--card); background:#FFF8E7; color:var(--dark); font-family:'Cinzel',serif; font-size:14px; font-weight:700; cursor:pointer; transition:all 0.2s;">18K</button>
-                <button class="purity-btn" id="p14" onclick="setPurity('14K')" style="flex:1; padding:10px 6px; border-radius:9px; border:2px solid var(--card); background:#FFF8E7; color:var(--dark); font-family:'Cinzel',serif; font-size:14px; font-weight:700; cursor:pointer; transition:all 0.2s;">14K</button>
               </div>
             </div>
 
@@ -2661,6 +2775,23 @@
 
             <div style="font-size:10px; color:#fff; font-family:'Inter',sans-serif; line-height:1.5; text-align:center;">
               ⚠️ Indicative rates only. Verify with MCX & local jewellers.
+            </div>
+          </div>
+
+          <!-- THIRD PANEL — quick summary -->
+          <div class="calculator-summary-panel">
+            <div class="calculator-summary-title">Your Estimate</div>
+            <div class="calculator-summary-item">
+              <div class="calculator-summary-label">Metal Rate / Gram</div>
+              <div class="calculator-summary-value" id="summaryRate">—</div>
+            </div>
+            <div class="calculator-summary-item">
+              <div class="calculator-summary-label">Final Amount With GST</div>
+              <div class="calculator-summary-value" id="summaryFinal">—</div>
+            </div>
+            <div class="calculator-summary-item">
+              <div class="calculator-summary-label">Total Metal You Get</div>
+              <div class="calculator-summary-value" id="summaryGrams">—</div>
             </div>
           </div>
         </div>
@@ -3119,6 +3250,7 @@ const setStatus = msg => {
 
 // ── GOLD RATES ─────────────────────────────────────────
 const GOLD_RATES = { '24K': null, '22K': null, '18K': null, '14K': null };
+let SILVER_RATE = null;
 
 async function fetchGold() {
   try {
@@ -3168,6 +3300,7 @@ async function fetchGold() {
     GOLD_RATES['14K'] = gold14k?.per_gram ?? null;
 
     // Silver
+    SILVER_RATE = data.silver?.price_per_gram ?? null;
     if (data.silver) {
       setWeight('agp1g', data.silver.price_per_gram, inrDec);
       setWeight('agp8g', data.silver.price_per_8g, inrFmt);
@@ -3679,11 +3812,24 @@ async function refreshAll() {
 // ── GOLD CALCULATOR ────────────────────────────────────
 const CITY_SURCHARGE = { '0':0,'200':200,'180':180,'150':150,'160':160,'140':140,'120':120,'130':130,'110':110,'100':100 };
 let currentPurity = '24K';
+let selectedGoldPurity = '24K';
 let calcMode = 'weight';
+
+function setMetal(metal) {
+  const isSilver = metal === 'SILVER';
+  const goldBtn = document.getElementById('metalGold');
+  const silverBtn = document.getElementById('metalSilver');
+  const purityChoices = document.getElementById('goldPurityChoices');
+  if (goldBtn) goldBtn.classList.toggle('active', !isSilver);
+  if (silverBtn) silverBtn.classList.toggle('active', isSilver);
+  if (purityChoices) purityChoices.style.display = isSilver ? 'none' : 'flex';
+  setPurity(isSilver ? 'SILVER' : selectedGoldPurity);
+}
 
 function setPurity(p) {
   currentPurity = p;
-  ['24','22','18','14'].forEach(k => {
+  if (p !== 'SILVER') selectedGoldPurity = p;
+  ['24','22','18'].forEach(k => {
     const btn = document.getElementById('p' + k);
     if (!btn) return;
     const active = k + 'K' === p;
@@ -3715,7 +3861,8 @@ function syncMakingInput()  { document.getElementById('makingInput').value  = do
 function syncAmtInput()     { document.getElementById('amtInput').value     = document.getElementById('amtSlider').value; }
 
 function recalc() {
-  const ratePerGram   = GOLD_RATES[currentPurity];
+  const ratePerGram   = currentPurity === 'SILVER' ? SILVER_RATE : GOLD_RATES[currentPurity];
+  const rateName      = currentPurity === 'SILVER' ? 'Silver' : currentPurity;
   const makingPct     = parseFloat(document.getElementById('makingInput')?.value) || 0;
   const includeGST    = document.getElementById('gstCheck')?.checked;
   const cityVal       = document.getElementById('citySelect')?.value || '0';
@@ -3727,12 +3874,18 @@ function recalc() {
   const td = document.getElementById('totalDisplay');
   const ts = document.getElementById('totalShort');
   const br = document.getElementById('breakdownRows');
+  const summaryRate = document.getElementById('summaryRate');
+  const summaryFinal = document.getElementById('summaryFinal');
+  const summaryGrams = document.getElementById('summaryGrams');
 
-  if (rl) rl.textContent = currentPurity + ' Rate';
+  if (rl) rl.textContent = rateName + ' Rate';
   if (ratePerGram == null) {
     if (rd) rd.textContent = '—';
     if (td) td.textContent = '—';
     if (ts) ts.textContent = '';
+    if (summaryRate) summaryRate.textContent = '—';
+    if (summaryFinal) summaryFinal.textContent = '—';
+    if (summaryGrams) summaryGrams.textContent = '—';
     if (br) {
       br.innerHTML = `
         <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,215,122,0.1);">
@@ -3765,10 +3918,13 @@ function recalc() {
   if (rd) rd.textContent = '₹' + ratePerGram.toLocaleString('en-IN') + '/gram';
   if (td) td.textContent = inrFmt(total);
   if (ts) ts.textContent = shortFmt(total);
+  if (summaryRate) summaryRate.textContent = inrDec(ratePerGram) + '/g';
+  if (summaryFinal) summaryFinal.textContent = inrFmt(total);
+  if (summaryGrams) summaryGrams.textContent = weightGrams.toFixed(3) + ' g';
 
   const rows = [
     { label:'Weight',                              val: weightGrams.toFixed(3) + ' grams' },
-    { label:'Rate (' + currentPurity + ')',         val: inrFmt(ratePerGram) + '/g' },
+    { label:'Rate (' + rateName + ')',               val: inrFmt(ratePerGram) + '/g' },
     surchargePerG > 0 ? { label:'City Premium',    val: inrFmt(surchargePerG) + '/g' } : null,
     { label:'Base Value',                           val: inrFmt(baseValue) },
     { label:'Making Charges (' + makingPct + '%)', val: inrFmt(makingCharge) },
