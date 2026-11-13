@@ -553,6 +553,514 @@ footer {
   to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
+/* Calculator output palette: apply only to the two result columns. */
+.gold-section.calculator-only .gold-calc-layout > #resultPanel {
+  background: linear-gradient(160deg, #105277 0%, #087885 100%) !important;
+}
+
+.gold-section.calculator-only #resultPanel > div:nth-child(2) {
+  background: rgba(81, 194, 214, 0.2) !important;
+  border-color: rgba(150, 236, 239, 0.35) !important;
+}
+
+.gold-section.calculator-only #resultPanel > div:nth-child(3) {
+  background: rgba(4, 49, 77, 0.28) !important;
+}
+
+.gold-section.calculator-only #resultPanel > div:nth-child(4) {
+  background: rgba(56, 187, 190, 0.24) !important;
+  border-color: rgba(133, 239, 220, 0.55) !important;
+}
+
+.gold-section.calculator-only #resultPanel [style*="color:#fff"],
+.gold-section.calculator-only #resultPanel [style*="color: #fff"] {
+  color: #f4fffe !important;
+}
+
+.gold-section.calculator-only #breakdownRows > div {
+  border-bottom-color: rgba(172, 238, 239, 0.22) !important;
+}
+
+.gold-section.calculator-only #breakdownRows span {
+  color: #f4fffe !important;
+}
+
+.gold-section.calculator-only .calculator-summary-panel {
+  background: linear-gradient(160deg, #e8fff3, #d5f8e9) !important;
+  box-shadow: inset 6px 6px 14px rgba(255, 255, 255, 0.72), inset -6px -6px 13px rgba(57, 145, 125, 0.12) !important;
+}
+
+.gold-section.calculator-only .gold-calc-layout {
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr) minmax(240px, 0.82fr) !important;
+}
+
+.gold-section.calculator-only .calculator-summary-panel {
+  padding: 26px 22px !important;
+}
+
+.gold-section.calculator-only .calculator-summary-title,
+.gold-section.calculator-only .calculator-summary-value {
+  color: #125d55 !important;
+}
+
+.gold-section.calculator-only .calculator-summary-title {
+  font-size: 22px !important;
+}
+
+.gold-section.calculator-only .calculator-summary-label {
+  color: #267466 !important;
+  font-size: 12px !important;
+}
+
+.gold-section.calculator-only .calculator-summary-value {
+  font-size: clamp(21px, 2vw, 29px) !important;
+}
+
+.gold-section.calculator-only .calculator-summary-item {
+  background: rgba(255, 255, 255, 0.48) !important;
+  min-height: 82px !important;
+  padding: 20px 18px !important;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  box-shadow: 0 8px 18px rgba(49, 131, 111, 0.14), inset 4px 4px 10px rgba(255, 255, 255, 0.75) !important;
+}
+
+.gold-section.calculator-only .calculator-summary-item:nth-child(2) {
+  background: linear-gradient(145deg, #b9f4f7, #a4eaf0) !important;
+  border: 1px solid #169caf !important;
+}
+
+.gold-section.calculator-only .calculator-summary-item:nth-child(3) {
+  background: linear-gradient(145deg, #fff5d8, #ffe9ae) !important;
+  border: 1px solid #e6b64c !important;
+}
+
+.gold-section.calculator-only .calculator-summary-item:nth-child(4) {
+  background: linear-gradient(145deg, #c8f8d7, #a9edc1) !important;
+  border: 1px solid #35b96b !important;
+}
+
+/* Construction calculator uses the same reference palette within its own section. */
+#construction-calculator {
+  background: linear-gradient(135deg, #fff8e6, #f1fff5) !important;
+  border-top: 1px solid #f0c767 !important;
+  border-bottom: 1px solid #f0c767 !important;
+}
+
+#construction-calculator .construction-sub,
+#construction-calculator .construction-panel h4,
+#construction-calculator .construction-field label,
+#construction-calculator .construction-field small,
+#construction-calculator .result-label,
+#construction-calculator .result-sub,
+#construction-calculator .summary-item span {
+  color: #796548 !important;
+}
+
+#construction-calculator .construction-panel {
+  border: 1px solid rgba(220, 166, 54, 0.35) !important;
+  background: rgba(255, 249, 235, 0.94) !important;
+  box-shadow: 0 14px 30px rgba(181, 133, 35, 0.16) !important;
+}
+
+#construction-calculator .construction-field input,
+#construction-calculator .construction-field select {
+  border-color: #efc76d !important;
+  background: #fffaf0 !important;
+  color: #5a3b13 !important;
+}
+
+#construction-calculator .construction-field input:focus,
+#construction-calculator .construction-field select:focus {
+  border-color: #d9971b !important;
+  box-shadow: 0 0 0 3px rgba(230, 165, 32, 0.18) !important;
+}
+
+#construction-calculator .construction-panel:nth-child(2) {
+  background: linear-gradient(160deg, #e8fff3, #d5f8e9) !important;
+}
+
+#construction-calculator .result-card {
+  border: 1px solid transparent !important;
+  box-shadow: 0 8px 18px rgba(49, 131, 111, 0.14) !important;
+}
+
+#construction-calculator .result-card:nth-child(1),
+#construction-calculator .result-card:nth-child(4) {
+  background: linear-gradient(145deg, #b9f4f7, #a4eaf0) !important;
+  border-color: #169caf !important;
+}
+
+#construction-calculator .result-card:nth-child(2),
+#construction-calculator .result-card:nth-child(5) {
+  background: linear-gradient(145deg, #fff5d8, #ffe9ae) !important;
+  border-color: #e6b64c !important;
+}
+
+#construction-calculator .result-card:nth-child(3) {
+  background: linear-gradient(145deg, #c8f8d7, #a9edc1) !important;
+  border-color: #35b96b !important;
+}
+
+#construction-calculator .result-value,
+#construction-calculator .summary-item strong {
+  color: #125d55 !important;
+}
+
+#construction-calculator .material-summary {
+  border-top: 1px solid rgba(38, 116, 102, 0.22);
+  padding-top: 18px;
+}
+
+#construction-calculator .summary-item {
+  background: rgba(255, 255, 255, 0.48) !important;
+  border: 1px solid rgba(53, 185, 107, 0.25);
+}
+
+#liveGoldRow {
+  display: block;
+  grid-template-columns: 1fr !important;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  margin: 0;
+}
+
+#liveGoldRow .gold-rate-option {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 16px 18px 14px;
+  border-radius: 18px;
+  box-sizing: border-box;
+}
+
+#liveGoldRow .gold-rate-option:not(#goldRate24Group) {
+  display: none;
+}
+
+#liveGoldRow .live-metal-group-header {
+  align-items: center;
+  padding-bottom: 8px;
+}
+
+#liveGoldRow .live-metal-values {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 10px;
+  flex: 1;
+}
+
+#liveGoldRow .live-metal-value {
+  min-height: 50px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex: 1;
+}
+
+#liveGoldRow .live-metal-value-label {
+  font-size: clamp(15px, 1.35vw, 20px);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+#liveGoldRow .live-metal-value-data {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-right: 0;
+}
+
+.gold-rate-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.gold-rate-controls label {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.gold-rate-controls select {
+  border: 1px solid rgba(200, 135, 18, 0.45);
+  border-radius: 999px;
+  padding: 6px 26px 6px 10px;
+  background: #fff8e7;
+  color: var(--dark);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+@media (max-width: 760px) {
+  #liveGoldRow {
+    width: 100%;
+  }
+
+  .other-metal-rates {
+    width: calc(100% - 32px);
+  }
+}
+
+.gold-rates-media-layout {
+  display: grid;
+  grid-template-columns: minmax(170px, 0.8fr) minmax(0, 1.5fr) minmax(170px, 0.8fr);
+  gap: 20px;
+  align-items: stretch;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.gold-rates-box-column {
+  min-width: 0;
+  display: flex;
+}
+
+.silver-rates-media-layout,
+.platinum-rates-media-layout {
+  display: grid;
+  grid-template-columns: minmax(170px, 0.8fr) minmax(0, 1.5fr) minmax(170px, 0.8fr);
+  gap: 20px;
+  align-items: stretch;
+  max-width: 1400px;
+  margin: 20px auto 0;
+}
+
+.platinum-rates-box-column {
+  min-width: 0;
+  display: flex;
+}
+
+.silver-rates-box-column {
+  min-width: 0;
+  display: flex;
+}
+
+.silver-rates-box-column #liveSilverRow,
+#liveSilverRow {
+  display: block;
+  grid-template-columns: 1fr !important;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  margin: 0;
+}
+
+#liveSilverRow .live-metal-group {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 16px 18px 14px;
+  border-radius: 18px;
+  box-sizing: border-box;
+}
+
+#liveSilverRow .live-metal-group-header {
+  align-items: center;
+  padding-bottom: 8px;
+}
+
+#liveSilverRow .live-metal-values {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 10px;
+  flex: 1;
+}
+
+#liveSilverRow .live-metal-value {
+  min-height: 50px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex: 1;
+}
+
+#liveSilverRow .live-metal-value-label {
+  font-size: clamp(15px, 1.35vw, 20px);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+#liveSilverRow .live-metal-value-data {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-right: 0;
+}
+
+.platinum-rates-box-column #livePlatinumRow,
+.other-metal-rates .live-gold-row,
+#livePlatinumRow {
+  display: block;
+  grid-template-columns: 1fr !important;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  margin: 0;
+}
+
+.other-metal-rates .live-metal-group,
+#livePlatinumRow .live-metal-group {
+  width: 100%;
+  min-height: 520px;
+  display: flex;
+  flex-direction: column;
+  padding: 16px 18px 14px;
+  border-radius: 18px;
+  box-sizing: border-box;
+}
+
+.other-metal-rates .live-metal-group-header,
+#livePlatinumRow .live-metal-group-header {
+  align-items: center;
+  padding-bottom: 8px;
+}
+
+.other-metal-rates .live-metal-values,
+#livePlatinumRow .live-metal-values {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 10px;
+  flex: 1;
+}
+
+.other-metal-rates .live-metal-value,
+#livePlatinumRow .live-metal-value {
+  min-height: 50px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex: 1;
+}
+
+.other-metal-rates .live-metal-value-label,
+#livePlatinumRow .live-metal-value-label {
+  font-size: clamp(15px, 1.35vw, 20px);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.other-metal-rates .live-metal-value-data,
+#livePlatinumRow .live-metal-value-data {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-right: 0;
+}
+
+
+.gold-rates-video-frame,
+.gold-rates-gallery,
+.silver-rates-video-frame,
+.silver-rates-gallery,
+.platinum-rates-video-frame,
+.platinum-rates-gallery {
+  overflow: hidden;
+  height: 100%;
+  min-height: 0;
+  border: 1px solid rgba(200, 135, 18, 0.35);
+  border-radius: 22px;
+  box-shadow: var(--clay-out), var(--clay-in);
+  background: #1b1208;
+}
+
+.gold-rates-video-frame {
+  min-width: 0;
+}
+
+.gold-rates-video-frame video,
+.silver-rates-video-frame video,
+.platinum-rates-video-frame video {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.gold-rates-gallery,
+.silver-rates-gallery,
+.platinum-rates-gallery {
+  position: relative;
+  padding: 0;
+  background: #f9f1e5;
+}
+
+.gold-rates-gallery img,
+.silver-rates-gallery img,
+.platinum-rates-gallery img {
+  position: absolute;
+  inset: 6px;
+  width: calc(100% - 12px);
+  height: calc(100% - 12px);
+  display: block;
+  object-fit: cover;
+  border-radius: 12px;
+  opacity: 0;
+  transition: opacity .45s ease;
+}
+
+.gold-rates-gallery img.active,
+.silver-rates-gallery img.active,
+.platinum-rates-gallery img.active {
+  opacity: 1;
+}
+
+@media (max-width: 1050px) {
+  .gold-rates-media-layout {
+    grid-template-columns: minmax(140px, 0.65fr) minmax(0, 1.7fr) minmax(140px, 0.65fr);
+    gap: 12px;
+  }
+
+  .silver-rates-media-layout,
+  .platinum-rates-media-layout {
+    grid-template-columns: minmax(140px, 0.65fr) minmax(0, 1.7fr) minmax(140px, 0.65fr);
+    gap: 12px;
+  }
+}
+
+@media (max-width: 760px) {
+  .gold-rates-media-layout,
+  .silver-rates-media-layout,
+  .platinum-rates-media-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .gold-rates-video-frame,
+  .silver-rates-video-frame,
+  .platinum-rates-video-frame {
+    max-height: 360px;
+  }
+}
+
 .chr-head {
   display: flex;
   align-items: center;

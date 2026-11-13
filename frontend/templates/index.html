@@ -1910,9 +1910,9 @@
   }
   .live-metal-value-label {
     color: var(--muted);
-    font-size: clamp(11px, 1vw, 14px);
-    font-weight: 600;
-    letter-spacing: 0.08em;
+    font-size: clamp(15px, 1.35vw, 20px);
+    font-weight: 700;
+    letter-spacing: 0.05em;
     text-transform: uppercase;
   }
   .live-metal-value-data {
@@ -1942,7 +1942,7 @@
   }
   @media (max-width: 420px) {
     .live-metal-group-title { font-size: 18px; }
-    .live-metal-value-label { font-size: 10px; }
+    .live-metal-value-label { font-size: 13px; font-weight: 700; }
     .live-metal-value .lmc-price { font-size: 19px; }
     .live-metal-value .lmc-change { font-size: 10px; }
     .live-metal-value-data { gap: 4px; }
@@ -2469,11 +2469,23 @@
         </button>
       </div>
     </div>
+    <div class="gold-rates-media-layout">
+      <div class="gold-rates-video-frame">
+        <video src="/static/media/gold-rates-video.mp4" autoplay muted loop playsinline></video>
+      </div>
+      <div class="gold-rates-box-column">
     <div class="live-gold-row grouped-metal-grid" id="liveGoldRow">
-      <div class="live-metal-group" style="--metal-accent:#C88712;">
+      <div class="live-metal-group gold-rate-option" id="goldRate24Group" style="--metal-accent:#C88712;">
         <div class="live-metal-group-header">
           <div><div class="live-metal-group-title">24K Gold</div><div class="live-metal-group-subtitle">Pure gold rate</div></div>
-          <span class="live-metal-badge">Gold</span>
+          <div class="gold-rate-controls">
+            <label>Gold purity</label>
+            <select class="gold-rate-selector" onchange="selectGoldRate(this.value)" aria-label="Gold purity">
+              <option value="24">24K</option>
+              <option value="22">22K</option>
+              <option value="18">18K</option>
+            </select>
+          </div>
         </div>
         <div class="live-metal-values">
           <div class="live-metal-value"><span class="live-metal-value-label">1 gram</span><div class="live-metal-value-data"><div class="lmc-price" id="g24p1g">—</div><div class="lmc-change" id="g24chg1g"></div></div></div>
@@ -2482,10 +2494,17 @@
           <div class="live-metal-value"><span class="live-metal-value-label">100 grams</span><div class="live-metal-value-data"><div class="lmc-price" id="g24p100g">—</div><div class="lmc-change" id="g24chg100g"></div></div></div>
         </div>
       </div>
-      <div class="live-metal-group" style="--metal-accent:#D67713;">
+      <div class="live-metal-group gold-rate-option" id="goldRate22Group" style="--metal-accent:#D67713;">
         <div class="live-metal-group-header">
           <div><div class="live-metal-group-title">22K Gold</div><div class="live-metal-group-subtitle">Jewellery gold rate</div></div>
-          <span class="live-metal-badge">Gold</span>
+          <div class="gold-rate-controls">
+            <label>Gold purity</label>
+            <select class="gold-rate-selector" onchange="selectGoldRate(this.value)" aria-label="Gold purity">
+              <option value="24">24K</option>
+              <option value="22">22K</option>
+              <option value="18">18K</option>
+            </select>
+          </div>
         </div>
         <div class="live-metal-values">
           <div class="live-metal-value"><span class="live-metal-value-label">1 gram</span><div class="live-metal-value-data"><div class="lmc-price" id="g22p1g">—</div><div class="lmc-change" id="g22chg1g"></div></div></div>
@@ -2494,10 +2513,17 @@
           <div class="live-metal-value"><span class="live-metal-value-label">100 grams</span><div class="live-metal-value-data"><div class="lmc-price" id="g22p100g">—</div><div class="lmc-change" id="g22chg100g"></div></div></div>
         </div>
       </div>
-      <div class="live-metal-group" style="--metal-accent:#B87918;">
+      <div class="live-metal-group gold-rate-option" id="goldRate18Group" style="--metal-accent:#B87918;">
         <div class="live-metal-group-header">
           <div><div class="live-metal-group-title">18K Gold</div><div class="live-metal-group-subtitle">Gold rate by weight</div></div>
-          <span class="live-metal-badge">Gold</span>
+          <div class="gold-rate-controls">
+            <label>Gold purity</label>
+            <select class="gold-rate-selector" onchange="selectGoldRate(this.value)" aria-label="Gold purity">
+              <option value="24">24K</option>
+              <option value="22">22K</option>
+              <option value="18">18K</option>
+            </select>
+          </div>
         </div>
         <div class="live-metal-values">
           <div class="live-metal-value"><span class="live-metal-value-label">1 gram</span><div class="live-metal-value-data"><div class="lmc-price" id="g18p1g">—</div><div class="lmc-change" id="g18chg1g"></div></div></div>
@@ -2506,29 +2532,78 @@
           <div class="live-metal-value"><span class="live-metal-value-label">100 grams</span><div class="live-metal-value-data"><div class="lmc-price" id="g18p100g">—</div><div class="lmc-change" id="g18chg100g"></div></div></div>
         </div>
       </div>
-      <div class="live-metal-group" style="--metal-accent:#3587B9;">
-        <div class="live-metal-group-header">
-          <div><div class="live-metal-group-title">Silver</div><div class="live-metal-group-subtitle">Silver rate by weight</div></div>
-          <span class="live-metal-badge">Metal</span>
-        </div>
-        <div class="live-metal-values">
-          <div class="live-metal-value"><span class="live-metal-value-label">1 gram</span><div class="live-metal-value-data"><div class="lmc-price" id="agp1g">—</div><div class="lmc-change" id="agchg1g"></div></div></div>
-          <div class="live-metal-value"><span class="live-metal-value-label">8 grams</span><div class="live-metal-value-data"><div class="lmc-price" id="agp8g">—</div><div class="lmc-change" id="agchg8g"></div></div></div>
-          <div class="live-metal-value"><span class="live-metal-value-label">10 grams</span><div class="live-metal-value-data"><div class="lmc-price" id="agp10g">—</div><div class="lmc-change" id="agchg10g"></div></div></div>
-          <div class="live-metal-value"><span class="live-metal-value-label">100 grams</span><div class="live-metal-value-data"><div class="lmc-price" id="agp100g">—</div><div class="lmc-change" id="agchg100g"></div></div></div>
+    </div>
+      </div>
+      <div class="gold-rates-gallery" aria-label="Gold jewellery gallery">
+        <img src="/static/media/gold-jewellery-1.jpg" alt="Gold necklace jewellery"/>
+        <img src="/static/media/gold-jewellery-2.jpg" alt="Gold bangles"/>
+        <img src="/static/media/gold-jewellery-3.jpg" alt="Gold jewellery set"/>
+        <img src="/static/media/gold-jewellery-4.jpg" alt="Gold bangles display"/>
+        <img src="/static/media/gold-jewellery-5.jpg" alt="Gold bracelets"/>
+        <img src="/static/media/gold-jewellery-6.jpg" alt="Traditional gold necklace"/>
+      </div>
+    </div>
+    <div class="silver-rates-media-layout">
+      <div class="silver-rates-video-frame">
+        <video src="/static/media/silver-rates-video.mp4" autoplay muted loop playsinline></video>
+      </div>
+      <div class="silver-rates-box-column">
+        <div class="live-gold-row" id="liveSilverRow">
+          <div class="live-metal-group" style="--metal-accent:#3587B9;">
+            <div class="live-metal-group-header">
+              <div><div class="live-metal-group-title">Silver</div><div class="live-metal-group-subtitle">Silver rate by weight</div></div>
+              <span class="live-metal-badge">Metal</span>
+            </div>
+            <div class="live-metal-values">
+              <div class="live-metal-value"><span class="live-metal-value-label">1 gram</span><div class="live-metal-value-data"><div class="lmc-price" id="agp1g">—</div><div class="lmc-change" id="agchg1g"></div></div></div>
+              <div class="live-metal-value"><span class="live-metal-value-label">8 grams</span><div class="live-metal-value-data"><div class="lmc-price" id="agp8g">—</div><div class="lmc-change" id="agchg8g"></div></div></div>
+              <div class="live-metal-value"><span class="live-metal-value-label">10 grams</span><div class="live-metal-value-data"><div class="lmc-price" id="agp10g">—</div><div class="lmc-change" id="agchg10g"></div></div></div>
+              <div class="live-metal-value"><span class="live-metal-value-label">100 grams</span><div class="live-metal-value-data"><div class="lmc-price" id="agp100g">—</div><div class="lmc-change" id="agchg100g"></div></div></div>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="live-metal-group" style="--metal-accent:#8B6B42;">
-        <div class="live-metal-group-header">
-          <div><div class="live-metal-group-title">Platinum</div><div class="live-metal-group-subtitle">Platinum rate by weight</div></div>
-          <span class="live-metal-badge">Metal</span>
+      <div class="silver-rates-gallery" aria-label="Silver jewellery gallery">
+        <img src="/static/media/silver1.jpg" alt="Silver diamond ring set"/>
+        <img src="/static/media/silver2.jpg" alt="Silver CZ rhodium bangles"/>
+        <img src="/static/media/silver3.jpg" alt="Silver crystal bracelet"/>
+        <img src="/static/media/silver4.jpg" alt="Premium silver polish bangles"/>
+        <img src="/static/media/silver5.jpg" alt="Silver bridal necklace set"/>
+        <img src="/static/media/silver6.jpg" alt="Silver jhumka necklace set"/>
+        <img src="/static/media/silver7.jpg" alt="Silver stone polish jewellery set"/>
+        <img src="/static/media/silver8.jpg" alt="Silver floral necklace set"/>
+      </div>
+    </div>
+    <div class="platinum-rates-media-layout other-metal-rates">
+      <div class="platinum-rates-gallery" aria-label="Platinum jewellery gallery">
+        <img src="/static/media/platinum1.jpg" alt="Platinum necklace set"/>
+        <img src="/static/media/platinum2.jpg" alt="Platinum CZ necklace"/>
+        <img src="/static/media/platinum3.jpg" alt="Platinum bridal jewellery set"/>
+        <img src="/static/media/platinum4.jpg" alt="Platinum diamond choker set"/>
+        <img src="/static/media/platinum5.jpg" alt="Platinum layered necklace"/>
+        <img src="/static/media/platinum6.jpg" alt="Platinum emerald drop necklace set"/>
+        <img src="/static/media/platinum7.jpg" alt="Platinum couple rings"/>
+        <img src="/static/media/platinum8.jpg" alt="Platinum wedding bands"/>
+        <img src="/static/media/platinum9.jpg" alt="Platinum floral necklace set"/>
+      </div>
+      <div class="platinum-rates-box-column">
+        <div class="live-gold-row" id="livePlatinumRow">
+          <div class="live-metal-group" style="--metal-accent:#8B6B42;">
+            <div class="live-metal-group-header">
+              <div><div class="live-metal-group-title">Platinum</div><div class="live-metal-group-subtitle">Platinum rate by weight</div></div>
+              <span class="live-metal-badge">Metal</span>
+            </div>
+            <div class="live-metal-values">
+              <div class="live-metal-value"><span class="live-metal-value-label">1 gram</span><div class="live-metal-value-data"><div class="lmc-price" id="ptp1g">—</div><div class="lmc-change" id="ptchg1g"></div></div></div>
+              <div class="live-metal-value"><span class="live-metal-value-label">8 grams</span><div class="live-metal-value-data"><div class="lmc-price" id="ptp8g">—</div><div class="lmc-change" id="ptchg8g"></div></div></div>
+              <div class="live-metal-value"><span class="live-metal-value-label">10 grams</span><div class="live-metal-value-data"><div class="lmc-price" id="ptp10g">—</div><div class="lmc-change" id="ptchg10g"></div></div></div>
+              <div class="live-metal-value"><span class="live-metal-value-label">100 grams</span><div class="live-metal-value-data"><div class="lmc-price" id="ptp100g">—</div><div class="lmc-change" id="ptchg100g"></div></div></div>
+            </div>
+          </div>
         </div>
-        <div class="live-metal-values">
-          <div class="live-metal-value"><span class="live-metal-value-label">1 gram</span><div class="live-metal-value-data"><div class="lmc-price" id="ptp1g">—</div><div class="lmc-change" id="ptchg1g"></div></div></div>
-          <div class="live-metal-value"><span class="live-metal-value-label">8 grams</span><div class="live-metal-value-data"><div class="lmc-price" id="ptp8g">—</div><div class="lmc-change" id="ptchg8g"></div></div></div>
-          <div class="live-metal-value"><span class="live-metal-value-label">10 grams</span><div class="live-metal-value-data"><div class="lmc-price" id="ptp10g">—</div><div class="lmc-change" id="ptchg10g"></div></div></div>
-          <div class="live-metal-value"><span class="live-metal-value-label">100 grams</span><div class="live-metal-value-data"><div class="lmc-price" id="ptp100g">—</div><div class="lmc-change" id="ptchg100g"></div></div></div>
-        </div>
+      </div>
+      <div class="platinum-rates-video-frame">
+        <video src="/static/media/platinum-rates-video.mp4" autoplay muted loop playsinline></video>
       </div>
     </div>
   </div>
@@ -3251,6 +3326,19 @@ const setStatus = msg => {
 // ── GOLD RATES ─────────────────────────────────────────
 const GOLD_RATES = { '24K': null, '22K': null, '18K': null, '14K': null };
 let SILVER_RATE = null;
+
+function selectGoldRate(purity) {
+  document.querySelectorAll('#liveGoldRow .gold-rate-selector').forEach(selector => {
+    selector.value = purity;
+  });
+  document.querySelectorAll('#liveGoldRow .gold-rate-option').forEach(group => {
+    group.style.setProperty(
+      'display',
+      group.id === 'goldRate' + purity + 'Group' ? 'flex' : 'none',
+      'important'
+    );
+  });
+}
 
 async function fetchGold() {
   try {
@@ -4357,6 +4445,20 @@ function setLanguage(language) {
   translatePage();
 }
 
+function startRateGalleries() {
+  document.querySelectorAll('.gold-rates-gallery, .silver-rates-gallery, .platinum-rates-gallery').forEach(gallery => {
+    const slides = Array.from(gallery.querySelectorAll('img'));
+    if (!slides.length) return;
+    let activeIndex = 0;
+    slides[activeIndex].classList.add('active');
+    setInterval(() => {
+      slides[activeIndex].classList.remove('active');
+      activeIndex = (activeIndex + 1) % slides.length;
+      slides[activeIndex].classList.add('active');
+    }, 3000);
+  });
+}
+
 const languageObserver = new MutationObserver(() => {
   if (currentLanguage === 'ta') translatePage();
 });
@@ -4371,6 +4473,7 @@ document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
 // ── BOOT ───────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', async () => {
   setLanguage(localStorage.getItem('finance4bs-language') || 'en');
+  startRateGalleries();
   recalc();
   initConstructionCalculator();
   setStatus('Initializing…');
