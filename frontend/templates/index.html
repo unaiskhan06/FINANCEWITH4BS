@@ -2857,11 +2857,11 @@
           <div class="calculator-summary-panel">
             <div class="calculator-summary-title">Your Estimate</div>
             <div class="calculator-summary-item">
-              <div class="calculator-summary-label">Metal Rate / Gram</div>
+              <div class="calculator-summary-label" id="summaryRateLabel">Rate / Gram (With GST)</div>
               <div class="calculator-summary-value" id="summaryRate">—</div>
             </div>
             <div class="calculator-summary-item">
-              <div class="calculator-summary-label">Final Amount With GST</div>
+              <div class="calculator-summary-label" id="summaryFinalLabel">Final Amount With GST</div>
               <div class="calculator-summary-value" id="summaryFinal">—</div>
             </div>
             <div class="calculator-summary-item">
@@ -3963,7 +3963,9 @@ function recalc() {
   const ts = document.getElementById('totalShort');
   const br = document.getElementById('breakdownRows');
   const summaryRate = document.getElementById('summaryRate');
+  const summaryRateLabel = document.getElementById('summaryRateLabel');
   const summaryFinal = document.getElementById('summaryFinal');
+  const summaryFinalLabel = document.getElementById('summaryFinalLabel');
   const summaryGrams = document.getElementById('summaryGrams');
 
   if (rl) rl.textContent = rateName + ' Rate';
@@ -4003,12 +4005,21 @@ function recalc() {
     total        = subtotal + gst;
   }
 
+  const effectiveRate = (weightGrams > 0 && total > 0) ? (total / weightGrams) : 0;
+
   if (rd) rd.textContent = '₹' + ratePerGram.toLocaleString('en-IN') + '/gram';
   if (td) td.textContent = inrFmt(total);
   if (ts) ts.textContent = shortFmt(total);
-  if (summaryRate) summaryRate.textContent = inrDec(ratePerGram) + '/g';
+  if (summaryRate) summaryRate.textContent = effectiveRate > 0 ? inrDec(effectiveRate) + '/g' : '—';
   if (summaryFinal) summaryFinal.textContent = inrFmt(total);
   if (summaryGrams) summaryGrams.textContent = weightGrams.toFixed(3) + ' g';
+
+  if (summaryRateLabel) {
+    summaryRateLabel.textContent = includeGST ? 'Rate / Gram (With GST)' : 'Rate / Gram (Excl. GST)';
+  }
+  if (summaryFinalLabel) {
+    summaryFinalLabel.textContent = includeGST ? 'Final Amount With GST' : 'Final Amount (Excl. GST)';
+  }
 
   const rows = [
     { label:'Weight',                              val: weightGrams.toFixed(3) + ' grams' },
