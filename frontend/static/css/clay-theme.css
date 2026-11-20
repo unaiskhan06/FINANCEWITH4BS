@@ -556,20 +556,51 @@ footer {
 /* Calculator output palette: apply only to the two result columns. */
 .gold-section.calculator-only .gold-calc-layout > #resultPanel {
   background: linear-gradient(160deg, #105277 0%, #087885 100%) !important;
+  gap: 20px !important;
+}
+
+.gold-section.calculator-only #totalTitle {
+  font-size: 14px !important;
+}
+
+.gold-section.calculator-only #totalDisplay {
+  font-size: clamp(38px, 3.2vw, 48px) !important;
+}
+
+.gold-section.calculator-only #rateLabel {
+  font-size: 13px !important;
+}
+
+.gold-section.calculator-only #rateDisplay {
+  font-size: 24px !important;
+}
+
+.gold-section.calculator-only #totalShortLabel {
+  font-size: 15px !important;
+}
+
+.gold-section.calculator-only #totalShort {
+  font-size: 24px !important;
 }
 
 .gold-section.calculator-only #resultPanel > div:nth-child(2) {
   background: rgba(81, 194, 214, 0.2) !important;
   border-color: rgba(150, 236, 239, 0.35) !important;
+  border-radius: 14px !important;
+  padding: 16px 20px !important;
 }
 
 .gold-section.calculator-only #resultPanel > div:nth-child(3) {
   background: rgba(4, 49, 77, 0.28) !important;
+  border-radius: 14px !important;
+  padding: 20px !important;
 }
 
 .gold-section.calculator-only #resultPanel > div:nth-child(4) {
   background: rgba(56, 187, 190, 0.24) !important;
   border-color: rgba(133, 239, 220, 0.55) !important;
+  border-radius: 14px !important;
+  padding: 16px 20px !important;
 }
 
 .gold-section.calculator-only #resultPanel [style*="color:#fff"],
@@ -578,6 +609,7 @@ footer {
 }
 
 .gold-section.calculator-only #breakdownRows > div {
+  padding: 8px 0 !important;
   border-bottom-color: rgba(172, 238, 239, 0.22) !important;
 }
 
@@ -639,6 +671,19 @@ footer {
 .gold-section.calculator-only .calculator-summary-item:nth-child(4) {
   background: linear-gradient(145deg, #c8f8d7, #a9edc1) !important;
   border: 1px solid #35b96b !important;
+}
+
+.gold-section.calculator-only .calculator-summary-item:nth-child(5) {
+  background: linear-gradient(145deg, #ffe2db, #ffd3c9) !important;
+  border: 1px solid #e06d53 !important;
+}
+
+.gold-section.calculator-only .calculator-summary-item:nth-child(5) .calculator-summary-label {
+  color: #a83824 !important;
+}
+
+.gold-section.calculator-only .calculator-summary-item:nth-child(5) .calculator-summary-value {
+  color: #c62828 !important;
 }
 
 /* Construction calculator uses the same reference palette within its own section. */

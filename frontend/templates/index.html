@@ -2858,31 +2858,31 @@
           </div>
 
           <!-- RIGHT PANEL — results -->
-          <div id="resultPanel" style="background:linear-gradient(160deg,#7A4A00 0%,#B8720A 60%,#7A4A00 100%); padding:28px 24px; display:flex; flex-direction:column; gap:16px;">
+          <div id="resultPanel" style="background:linear-gradient(160deg,#7A4A00 0%,#B8720A 60%,#7A4A00 100%); padding:28px 24px; display:flex; flex-direction:column; gap:20px;">
 
             <div>
-              <div id="totalTitle" style="font-family:'Inter',sans-serif; font-size:12px; font-weight:700; color:#fff; letter-spacing:0.18em; text-transform:uppercase; margin-bottom:6px;">Total Amount</div>
-              <div id="totalDisplay" style="font-family:'Cinzel',serif; font-size:34px; font-weight:700; color:#fff; line-height:1.1; letter-spacing:0.02em;">₹0</div>
+              <div id="totalTitle" style="font-family:'Inter',sans-serif; font-size:14px; font-weight:700; color:#fff; letter-spacing:0.18em; text-transform:uppercase; margin-bottom:8px;">Total Amount</div>
+              <div id="totalDisplay" style="font-family:'Cinzel',serif; font-size:clamp(38px,3.2vw,48px); font-weight:700; color:#fff; line-height:1.1; letter-spacing:0.02em;">₹0</div>
             </div>
 
-            <div style="background:rgba(255,215,122,0.12); border:1px solid rgba(255,215,122,0.2); border-radius:12px; padding:14px 16px;">
-              <div id="rateLabel" style="font-family:'Inter',sans-serif; font-size:11px; font-weight:700; color:#fff; letter-spacing:0.14em; text-transform:uppercase; margin-bottom:4px;">24K Current Rate</div>
-              <div id="rateDisplay" style="font-family:'Cinzel',serif; font-size:18px; font-weight:700; color:#fff;">₹7,185/gram</div>
+            <div style="background:rgba(255,215,122,0.12); border:1px solid rgba(255,215,122,0.2); border-radius:14px; padding:16px 20px;">
+              <div id="rateLabel" style="font-family:'Inter',sans-serif; font-size:13px; font-weight:700; color:#fff; letter-spacing:0.14em; text-transform:uppercase; margin-bottom:6px;">24K Current Rate</div>
+              <div id="rateDisplay" style="font-family:'Cinzel',serif; font-size:24px; font-weight:700; color:#fff; letter-spacing:0.02em;">₹7,185/gram</div>
             </div>
 
-            <div style="background:rgba(0,0,0,0.15); border-radius:12px; padding:16px;">
-            <div style="font-family:'Inter',sans-serif; font-size:12px; font-weight:700; color:#fff; letter-spacing:0.14em; text-transform:uppercase; margin-bottom:12px;">Calculation Breakdown</div>
-              <div id="breakdownRows" style="display:flex; flex-direction:column; gap:8px; font-family:'Inter',sans-serif; font-size:13px;">
+            <div style="background:rgba(0,0,0,0.15); border-radius:14px; padding:20px;">
+              <div style="font-family:'Inter',sans-serif; font-size:14px; font-weight:700; color:#fff; letter-spacing:0.14em; text-transform:uppercase; margin-bottom:14px;">Calculation Breakdown</div>
+              <div id="breakdownRows" style="display:flex; flex-direction:column; gap:10px; font-family:'Inter',sans-serif;">
                 <!-- populated by JS -->
               </div>
             </div>
 
-            <div style="background:rgba(255,215,122,0.18); border:1.5px solid rgba(255,215,122,0.35); border-radius:12px; padding:14px 16px; display:flex; justify-content:space-between; align-items:center; margin-top:auto;">
-              <div id="totalShortLabel" style="font-family:'Inter',sans-serif; font-size:14px; font-weight:700; color:#fff; letter-spacing:0.06em;">Total Amount</div>
-              <div id="totalShort" style="font-family:'Cinzel',serif; font-size:20px; font-weight:700; color:#fff;"></div>
+            <div style="background:rgba(255,215,122,0.18); border:1.5px solid rgba(255,215,122,0.35); border-radius:14px; padding:16px 20px; display:flex; justify-content:space-between; align-items:center; margin-top:auto;">
+              <div id="totalShortLabel" style="font-family:'Inter',sans-serif; font-size:15px; font-weight:700; color:#fff; letter-spacing:0.06em;">Total Amount</div>
+              <div id="totalShort" style="font-family:'Cinzel',serif; font-size:24px; font-weight:700; color:#fff;"></div>
             </div>
 
-            <div style="font-size:10px; color:#fff; font-family:'Inter',sans-serif; line-height:1.5; text-align:center;">
+            <div style="font-size:11px; color:#fff; font-family:'Inter',sans-serif; line-height:1.5; text-align:center;">
               ⚠️ Indicative rates only. Verify with MCX & local jewellers.
             </div>
           </div>
@@ -2901,6 +2901,10 @@
             <div class="calculator-summary-item">
               <div class="calculator-summary-label" id="summaryGramsLabel">Total Metal You Get</div>
               <div class="calculator-summary-value" id="summaryGrams">—</div>
+            </div>
+            <div class="calculator-summary-item" id="summaryCostCard">
+              <div class="calculator-summary-label" id="summaryCostLabel">Additional Cost</div>
+              <div class="calculator-summary-value" id="summaryCost">—</div>
             </div>
             <!-- Sell-mode loss cards (hidden by default) -->
             <div id="sellLossCards" style="display:none; flex-direction:column; gap:12px; margin-top:12px;">
@@ -3995,6 +3999,8 @@ function setTradeMode(mode) {
   // Show/hide sell loss cards in estimate panel
   const sellLossCards = document.getElementById('sellLossCards');
   if (sellLossCards) sellLossCards.style.display = isBuy ? 'none' : 'flex';
+  const summaryCostCard = document.getElementById('summaryCostCard');
+  if (summaryCostCard) summaryCostCard.style.display = isBuy ? 'flex' : 'none';
 
   recalc();
 }
@@ -4072,6 +4078,8 @@ function recalc() {
   const summaryTitle = document.getElementById('summaryTitle');
   const summaryLoss = document.getElementById('summaryLoss');
   const summaryLossPct = document.getElementById('summaryLossPct');
+  const summaryCost = document.getElementById('summaryCost');
+  const summaryCostLabel = document.getElementById('summaryCostLabel');
 
   if (rl) rl.textContent = rateName + ' Rate';
   if (ratePerGram == null) {
@@ -4081,6 +4089,7 @@ function recalc() {
     if (summaryRate) summaryRate.textContent = '—';
     if (summaryFinal) summaryFinal.textContent = '—';
     if (summaryGrams) summaryGrams.textContent = '—';
+    if (summaryCost) summaryCost.textContent = '—';
     if (summaryLoss) summaryLoss.textContent = '—';
     if (summaryLossPct) summaryLossPct.textContent = '—';
     if (br) {
@@ -4125,6 +4134,7 @@ function recalc() {
     if (summaryGrams) summaryGrams.textContent = weightGrams.toFixed(3) + ' g';
     if (summaryLoss) summaryLoss.textContent = loss > 0 ? '−' + inrFmt(loss) : inrFmt(Math.abs(loss));
     if (summaryLossPct) summaryLossPct.textContent = lossPctVal.toFixed(1) + '%';
+    if (summaryCost) summaryCost.textContent = '—';
 
     if (summaryTitle) summaryTitle.textContent = 'Selling Estimate';
     if (summaryRateLabel) summaryRateLabel.textContent = 'Sell Rate / Gram';
@@ -4149,12 +4159,12 @@ function recalc() {
     ].filter(Boolean);
 
     if (br) br.innerHTML = rows.map(r => {
-      if (r.spacer) return '<div style="border-bottom:2px solid rgba(255,215,122,0.3);margin:6px 0;"></div>';
+      if (r.spacer) return '<div style="border-bottom:2px solid rgba(255,215,122,0.3);margin:8px 0;"></div>';
       const color = r.loss ? '#ff8a80' : '#fff';
       return `
-      <div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid rgba(255,215,122,0.1);">
-        <span style="color:${color};font-weight:${r.bold?700:500};font-size:${r.bold?'13px':'12px'};">${r.label}</span>
-        <span style="color:${color};font-family:'Cinzel',serif;font-weight:${r.bold?700:600};font-size:${r.bold?'14px':'13px'};">${r.val}</span>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,215,122,0.15);">
+        <span style="color:${color};font-weight:${r.bold?700:500};font-size:${r.bold?'15px':'14px'};">${r.label}</span>
+        <span style="color:${color};font-family:'Cinzel',serif;font-weight:${r.bold?700:600};font-size:${r.bold?'18px':'16px'};letter-spacing:0.02em;">${r.val}</span>
       </div>`;
     }).join('');
 
@@ -4193,6 +4203,14 @@ function recalc() {
     if (summaryRate) summaryRate.textContent = effectiveRate > 0 ? inrDec(effectiveRate) + '/g' : '—';
     if (summaryFinal) summaryFinal.textContent = inrFmt(total);
     if (summaryGrams) summaryGrams.textContent = weightGrams.toFixed(3) + ' g';
+    if (summaryCost) {
+      if (effectiveRate > 0 && ratePerGram != null) {
+        const diff = ratePerGram - effectiveRate;
+        summaryCost.textContent = (diff < 0 ? '−' : (diff > 0 ? '+' : '')) + inrDec(Math.abs(diff)) + '/g';
+      } else {
+        summaryCost.textContent = '—';
+      }
+    }
 
     if (summaryTitle) summaryTitle.textContent = 'Your Estimate';
     if (summaryRateLabel) {
@@ -4202,6 +4220,7 @@ function recalc() {
       summaryFinalLabel.textContent = gstPct > 0 ? 'Final Amount With GST' : 'Final Amount (Excl. GST)';
     }
     if (summaryGramsLabel) summaryGramsLabel.textContent = 'Total Metal You Get';
+    if (summaryCostLabel) summaryCostLabel.textContent = 'Additional Cost';
 
     const rows = [
       { label:'Weight',                              val: weightGrams.toFixed(3) + ' grams' },
@@ -4214,9 +4233,9 @@ function recalc() {
     ].filter(Boolean);
 
     if (br) br.innerHTML = rows.map(r => `
-      <div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid rgba(255,215,122,0.1);">
-        <span style="color:#fff;font-weight:${r.bold?700:500};font-size:${r.bold?'13px':'12px'};">${r.label}</span>
-        <span style="color:#fff;font-family:'Cinzel',serif;font-weight:${r.bold?700:600};font-size:${r.bold?'14px':'13px'};">${r.val}</span>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,215,122,0.15);">
+        <span style="color:#fff;font-weight:${r.bold?700:500};font-size:${r.bold?'15px':'14px'};">${r.label}</span>
+        <span style="color:#fff;font-family:'Cinzel',serif;font-weight:${r.bold?700:600};font-size:${r.bold?'18px':'16px'};letter-spacing:0.02em;">${r.val}</span>
       </div>`).join('');
   }
 }
@@ -4532,6 +4551,7 @@ const tamilTranslations = [
   ['Total Amount', 'மொத்த தொகை'],
   ['Current Rate', 'தற்போதைய விகிதம்'],
   ['24K Rate', '24K விகிதம்'],
+  ['Additional Cost', 'கூடுதல் செலவு'],
   ['grams', 'கிராம்கள்'],
   ['Enter rates in the admin panel to enable the calculator.', 'கணிப்பானை இயக்க நிர்வாகப் பலகையில் விகிதங்களை உள்ளிடவும்.'],
   ['Initializing…', 'தொடங்குகிறது…'],
