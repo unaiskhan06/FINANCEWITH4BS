@@ -2823,11 +2823,20 @@
               <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--muted); font-family:'Inter',sans-serif; margin-top:2px;"><span>0%</span><span>20%</span></div>
             </div>
 
-            <!-- GST toggle -->
-            <div id="gstRow" style="display:flex; align-items:center; gap:10px; margin-bottom:18px; background:rgba(255,215,122,0.2); border:1px solid rgba(230,165,32,0.3); border-radius:10px; padding:12px 14px;">
-              <input type="checkbox" id="gstCheck" checked onchange="recalc()"
-                style="width:18px; height:18px; accent-color:var(--accent); cursor:pointer;"/>
-              <label for="gstCheck" style="font-family:'Inter',sans-serif; font-size:14px; font-weight:600; color:var(--dark); cursor:pointer;">Include GST (3%)</label>
+            <!-- GST (Both Buying and Selling, adjustable number) -->
+            <div id="gstRow" style="margin-bottom:18px;">
+              <div id="gstLabel" style="font-family:'Inter',sans-serif; font-size:12px; font-weight:700; color:var(--muted); letter-spacing:0.12em; text-transform:uppercase; margin-bottom:10px;">GST Rate (%)</div>
+              <div style="display:flex; gap:8px; align-items:center;">
+                <input id="gstInput" type="number" value="3" min="0" max="28" step="0.5"
+                  oninput="syncGstSlider(); recalc()"
+                  style="flex:1; padding:10px 14px; border-radius:9px; border:1.5px solid var(--card); background:#FFF8E7; font-family:'Cinzel',serif; font-size:16px; color:var(--deep); font-weight:700; outline:none;"
+                  onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--card)'"/>
+                <span style="font-family:'Inter',sans-serif; font-size:15px; font-weight:700; color:var(--dark);">%</span>
+              </div>
+              <input id="gstSlider" type="range" min="0" max="15" value="3" step="0.5"
+                oninput="syncGstInput(); recalc()"
+                style="width:100%; margin-top:10px; accent-color:var(--accent); cursor:pointer;"/>
+              <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--muted); font-family:'Inter',sans-serif; margin-top:2px;"><span>0%</span><span>15%</span></div>
             </div>
 
             <!-- City -->
@@ -3965,8 +3974,11 @@ function setTradeMode(mode) {
   const deductionRow = document.getElementById('deductionRow');
   if (deductionRow) deductionRow.style.display = isBuy ? 'none' : 'block';
 
+  // GST row is shown in BOTH buying and selling with adjustable number
   const gstRow = document.getElementById('gstRow');
-  if (gstRow) gstRow.style.display = isBuy ? 'flex' : 'none';
+  if (gstRow) gstRow.style.display = 'block';
+  const gstLabel = document.getElementById('gstLabel');
+  if (gstLabel) gstLabel.textContent = isBuy ? 'GST Rate (%)' : 'Original GST Paid (%)';
 
   const cityRow = document.getElementById('cityRow');
   if (cityRow) cityRow.style.display = isBuy ? 'block' : 'none';
@@ -4033,12 +4045,14 @@ function syncMakingInput()  { document.getElementById('makingInput').value  = do
 function syncAmtInput()     { document.getElementById('amtInput').value     = document.getElementById('amtSlider').value; }
 function syncDeductionSlider() { document.getElementById('deductionSlider').value = document.getElementById('deductionInput').value; }
 function syncDeductionInput()  { document.getElementById('deductionInput').value  = document.getElementById('deductionSlider').value; }
+function syncGstSlider()    { document.getElementById('gstSlider').value    = document.getElementById('gstInput').value; }
+function syncGstInput()     { document.getElementById('gstInput').value     = document.getElementById('gstSlider').value; }
 
 function recalc() {
   const ratePerGram   = currentPurity === 'SILVER' ? SILVER_RATE : GOLD_RATES[currentPurity];
   const rateName      = currentPurity === 'SILVER' ? 'Silver' : currentPurity;
   const makingPct     = parseFloat(document.getElementById('makingInput')?.value) || 0;
-  const includeGST    = document.getElementById('gstCheck')?.checked;
+  const gstPct        = Math.max(0, parseFloat(document.getElementById('gstInput')?.value) || 0);
   const cityVal       = document.getElementById('citySelect')?.value || '0';
   const surchargePerG = (CITY_SURCHARGE[cityVal] || 0) / 10;
   const deductionPct  = parseFloat(document.getElementById('deductionInput')?.value) || 0;
@@ -4091,7 +4105,7 @@ function recalc() {
     const buyBase = weightGrams * (ratePerGram + surchargePerG);
     const buyMaking = buyBase * (makingPct / 100);
     const buySubtotal = buyBase + buyMaking;
-    const buyGst = buySubtotal * 0.03;
+    const buyGst = buySubtotal * (gstPct / 100);
     const buyTotal = buySubtotal + buyGst;
     const loss = buyTotal - sellAmount;
     const lossPctVal = buyTotal > 0 ? (loss / buyTotal) * 100 : 0;
@@ -4121,15 +4135,17 @@ function recalc() {
 
     const metalValLabel = currentPurity === 'SILVER' ? 'Silver Value' : 'Gold Value';
     const rows = [
-      { label:'Weight',                                   val: weightGrams.toFixed(3) + ' grams' },
-      { label:rateName + ' Rate',                         val: inrFmt(ratePerGram) + '/g' },
-      { label:metalValLabel,                              val: inrFmt(goldValue) },
-      { label:'Purity/Melting Deduction (' + deductionPct + '%)', val: '−' + inrFmt(deduction) },
-      { label:'Amount You Receive',                       val: inrFmt(sellAmount), bold: true },
+      { label:'Weight',                                            val: weightGrams.toFixed(3) + ' grams' },
+      { label:rateName + ' Rate',                                  val: inrFmt(ratePerGram) + '/g' },
+      { label:metalValLabel,                                       val: inrFmt(goldValue) },
+      { label:'Purity/Melting Deduction (' + deductionPct + '%)',  val: '−' + inrFmt(deduction), loss: true },
+      { label:'Amount You Receive',                                val: inrFmt(sellAmount), bold: true },
       { label:'', val:'', spacer: true },
-      { label:'Buying Cost with Making & GST (est.)',     val: inrFmt(buyTotal) },
-      { label:'Your Resale Loss',                         val: '−' + inrFmt(loss), bold: true, loss: true },
-      { label:'Loss Percentage',                          val: lossPctVal.toFixed(1) + '%', loss: true },
+      { label:'Original Buying Cost (est.)',                       val: inrFmt(buyTotal) },
+      { label:'Original Making Charge Paid (' + makingPct + '%)',  val: '−' + inrFmt(buyMaking), loss: true },
+      { label:'GST (' + gstPct + '%)',                             val: '−' + inrFmt(buyGst), loss: true },
+      { label:'Your Resale Loss',                                  val: '−' + inrFmt(loss), bold: true, loss: true },
+      { label:'Loss Percentage',                                   val: lossPctVal.toFixed(1) + '%', loss: true },
     ].filter(Boolean);
 
     if (br) br.innerHTML = rows.map(r => {
@@ -4151,16 +4167,16 @@ function recalc() {
       baseValue    = weightGrams * (ratePerGram + surchargePerG);
       makingCharge = baseValue * (makingPct / 100);
       subtotal     = baseValue + makingCharge;
-      gst          = includeGST ? subtotal * 0.03 : 0;
+      gst          = subtotal * (gstPct / 100);
       total        = subtotal + gst;
     } else {
       const amt  = parseFloat(document.getElementById('amtInput')?.value) || 0;
-      const div  = includeGST ? (1 + makingPct/100) * 1.03 : (1 + makingPct/100);
-      baseValue    = amt / div;
-      weightGrams  = baseValue / (ratePerGram + surchargePerG);
+      const div  = (1 + makingPct/100) * (1 + gstPct/100);
+      baseValue    = div > 0 ? amt / div : 0;
+      weightGrams  = (ratePerGram + surchargePerG) > 0 ? baseValue / (ratePerGram + surchargePerG) : 0;
       makingCharge = baseValue * (makingPct / 100);
       subtotal     = baseValue + makingCharge;
-      gst          = includeGST ? subtotal * 0.03 : 0;
+      gst          = subtotal * (gstPct / 100);
       total        = subtotal + gst;
     }
 
@@ -4180,10 +4196,10 @@ function recalc() {
 
     if (summaryTitle) summaryTitle.textContent = 'Your Estimate';
     if (summaryRateLabel) {
-      summaryRateLabel.textContent = includeGST ? 'Rate / Gram (With GST)' : 'Rate / Gram (Excl. GST)';
+      summaryRateLabel.textContent = gstPct > 0 ? 'Rate / Gram (With GST)' : 'Rate / Gram (Excl. GST)';
     }
     if (summaryFinalLabel) {
-      summaryFinalLabel.textContent = includeGST ? 'Final Amount With GST' : 'Final Amount (Excl. GST)';
+      summaryFinalLabel.textContent = gstPct > 0 ? 'Final Amount With GST' : 'Final Amount (Excl. GST)';
     }
     if (summaryGramsLabel) summaryGramsLabel.textContent = 'Total Metal You Get';
 
@@ -4194,7 +4210,7 @@ function recalc() {
       { label:'Base Value',                           val: inrFmt(baseValue) },
       { label:'Making Charges (' + makingPct + '%)', val: inrFmt(makingCharge) },
       { label:'Subtotal',                             val: inrFmt(subtotal), bold: true },
-      includeGST ? { label:'GST (3%)',               val: inrFmt(gst) } : null,
+      gstPct > 0 ? { label:'GST (' + gstPct + '%)',  val: inrFmt(gst) } : null,
     ].filter(Boolean);
 
     if (br) br.innerHTML = rows.map(r => `
