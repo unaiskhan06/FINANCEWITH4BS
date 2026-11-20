@@ -2723,8 +2723,8 @@
       <!-- ══ FULL GOLD CALCULATOR ══ -->
       <div id="gold-calc-widget" style="border-radius:20px; overflow:hidden; box-shadow:0 12px 40px rgba(122,74,0,0.22); border:2px solid rgba(230,165,32,0.35);">
 
-        <!-- Mode toggle -->
-        <div style="display:flex; background:rgba(255,215,122,0.25); border-bottom:1.5px solid rgba(230,165,32,0.25);">
+        <!-- Mode toggle (weight / amount) -->
+        <div id="calcModeBar" style="display:flex; background:rgba(255,215,122,0.25); border-bottom:1.5px solid rgba(230,165,32,0.25);">
           <button id="modeWeight" onclick="setCalcMode('weight')" style="flex:1; padding:14px 10px; border:none; background:linear-gradient(135deg,var(--accent),#B8720A); color:#fff; font-family:'Inter',sans-serif; font-size:14px; font-weight:700; cursor:pointer; letter-spacing:0.06em; transition:all 0.2s;">⚖️ Calculate By Weight</button>
           <button id="modeAmount" onclick="setCalcMode('amount')" style="flex:1; padding:14px 10px; border:none; background:rgba(255,248,231,0.9); color:var(--muted); font-family:'Inter',sans-serif; font-size:14px; font-weight:700; cursor:pointer; letter-spacing:0.06em; border-left:1.5px solid rgba(230,165,32,0.25); transition:all 0.2s;">💰 Calculate By Amount</button>
         </div>
@@ -2733,6 +2733,15 @@
 
           <!-- LEFT PANEL — inputs -->
           <div style="background:rgba(255,248,231,0.95); padding:28px 24px;">
+
+            <!-- Transaction: Buying / Selling (Top Left Corner) -->
+            <div style="margin-bottom:20px;">
+              <div style="font-family:'Inter',sans-serif; font-size:12px; font-weight:700; color:var(--muted); letter-spacing:0.12em; text-transform:uppercase; margin-bottom:10px;">Transaction</div>
+              <div class="calculator-metal-selector">
+                <button type="button" class="calculator-metal-btn active" id="modeBuy" onclick="setTradeMode('buy')" style="flex:1; padding:10px 10px; border-radius:9px; border:2px solid transparent; background:linear-gradient(135deg,#1a7a4c,#22995e); color:#fff; font-family:'Inter',sans-serif; font-size:13px; font-weight:700; cursor:pointer; transition:all 0.2s;">🛒 Buying</button>
+                <button type="button" class="calculator-metal-btn" id="modeSell" onclick="setTradeMode('sell')" style="flex:1; padding:10px 10px; border-radius:9px; border:2px solid var(--card); background:#FFF8E7; color:var(--dark); font-family:'Inter',sans-serif; font-size:13px; font-weight:700; cursor:pointer; transition:all 0.2s;">💸 Selling</button>
+              </div>
+            </div>
 
             <!-- Gold Purity -->
             <div style="margin-bottom:20px;">
@@ -2783,8 +2792,8 @@
             </div>
 
             <!-- Making charge -->
-            <div style="margin-bottom:18px;">
-              <div style="font-family:'Inter',sans-serif; font-size:12px; font-weight:700; color:var(--muted); letter-spacing:0.12em; text-transform:uppercase; margin-bottom:10px;">Making Charge (%)</div>
+            <div id="makingChargeRow" style="margin-bottom:18px;">
+              <div id="makingLabel" style="font-family:'Inter',sans-serif; font-size:12px; font-weight:700; color:var(--muted); letter-spacing:0.12em; text-transform:uppercase; margin-bottom:10px;">Making Charge (%)</div>
               <div style="display:flex; gap:8px; align-items:center;">
                 <input id="makingInput" type="number" value="12" min="0" max="50" step="0.5"
                   oninput="syncMakingSlider(); recalc()"
@@ -2798,15 +2807,31 @@
               <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--muted); font-family:'Inter',sans-serif; margin-top:2px;"><span>0%</span><span>50%</span></div>
             </div>
 
+            <!-- Purity / Melting Deduction (Sell mode only) -->
+            <div id="deductionRow" style="margin-bottom:18px; display:none;">
+              <div style="font-family:'Inter',sans-serif; font-size:12px; font-weight:700; color:var(--muted); letter-spacing:0.12em; text-transform:uppercase; margin-bottom:10px;">Purity / Melting Deduction (%)</div>
+              <div style="display:flex; gap:8px; align-items:center;">
+                <input id="deductionInput" type="number" value="1" min="0" max="20" step="0.1"
+                  oninput="syncDeductionSlider(); recalc()"
+                  style="flex:1; padding:10px 14px; border-radius:9px; border:1.5px solid var(--card); background:#FFF8E7; font-family:'Cinzel',serif; font-size:16px; color:var(--deep); font-weight:700; outline:none;"
+                  onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--card)'"/>
+                <span style="font-family:'Inter',sans-serif; font-size:15px; font-weight:700; color:var(--dark);">%</span>
+              </div>
+              <input id="deductionSlider" type="range" min="0" max="20" value="1" step="0.1"
+                oninput="syncDeductionInput(); recalc()"
+                style="width:100%; margin-top:10px; accent-color:var(--accent); cursor:pointer;"/>
+              <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--muted); font-family:'Inter',sans-serif; margin-top:2px;"><span>0%</span><span>20%</span></div>
+            </div>
+
             <!-- GST toggle -->
-            <div style="display:flex; align-items:center; gap:10px; margin-bottom:18px; background:rgba(255,215,122,0.2); border:1px solid rgba(230,165,32,0.3); border-radius:10px; padding:12px 14px;">
+            <div id="gstRow" style="display:flex; align-items:center; gap:10px; margin-bottom:18px; background:rgba(255,215,122,0.2); border:1px solid rgba(230,165,32,0.3); border-radius:10px; padding:12px 14px;">
               <input type="checkbox" id="gstCheck" checked onchange="recalc()"
                 style="width:18px; height:18px; accent-color:var(--accent); cursor:pointer;"/>
               <label for="gstCheck" style="font-family:'Inter',sans-serif; font-size:14px; font-weight:600; color:var(--dark); cursor:pointer;">Include GST (3%)</label>
             </div>
 
             <!-- City -->
-            <div>
+            <div id="cityRow">
               <div style="font-family:'Inter',sans-serif; font-size:12px; font-weight:700; color:var(--muted); letter-spacing:0.12em; text-transform:uppercase; margin-bottom:10px;">City</div>
               <select id="citySelect" onchange="recalc()" style="width:100%; padding:11px 14px; border-radius:9px; border:1.5px solid var(--card); background:#FFF8E7; font-family:'Inter',sans-serif; font-size:14px; color:var(--dark); font-weight:600; outline:none; cursor:pointer; appearance:none; background-image:url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 10 6%22><path d=%22M0 0l5 6 5-6z%22 fill=%22%237A4A00%22/></svg>'); background-repeat:no-repeat; background-position:right 14px center; background-size:10px;">
                 <option value="0">Chennai</option>
@@ -2827,7 +2852,7 @@
           <div id="resultPanel" style="background:linear-gradient(160deg,#7A4A00 0%,#B8720A 60%,#7A4A00 100%); padding:28px 24px; display:flex; flex-direction:column; gap:16px;">
 
             <div>
-              <div style="font-family:'Inter',sans-serif; font-size:12px; font-weight:700; color:#fff; letter-spacing:0.18em; text-transform:uppercase; margin-bottom:6px;">Total Amount</div>
+              <div id="totalTitle" style="font-family:'Inter',sans-serif; font-size:12px; font-weight:700; color:#fff; letter-spacing:0.18em; text-transform:uppercase; margin-bottom:6px;">Total Amount</div>
               <div id="totalDisplay" style="font-family:'Cinzel',serif; font-size:34px; font-weight:700; color:#fff; line-height:1.1; letter-spacing:0.02em;">₹0</div>
             </div>
 
@@ -2844,7 +2869,7 @@
             </div>
 
             <div style="background:rgba(255,215,122,0.18); border:1.5px solid rgba(255,215,122,0.35); border-radius:12px; padding:14px 16px; display:flex; justify-content:space-between; align-items:center; margin-top:auto;">
-              <div style="font-family:'Inter',sans-serif; font-size:14px; font-weight:700; color:#fff; letter-spacing:0.06em;">Total Amount</div>
+              <div id="totalShortLabel" style="font-family:'Inter',sans-serif; font-size:14px; font-weight:700; color:#fff; letter-spacing:0.06em;">Total Amount</div>
               <div id="totalShort" style="font-family:'Cinzel',serif; font-size:20px; font-weight:700; color:#fff;"></div>
             </div>
 
@@ -2855,7 +2880,7 @@
 
           <!-- THIRD PANEL — quick summary -->
           <div class="calculator-summary-panel">
-            <div class="calculator-summary-title">Your Estimate</div>
+            <div class="calculator-summary-title" id="summaryTitle">Your Estimate</div>
             <div class="calculator-summary-item">
               <div class="calculator-summary-label" id="summaryRateLabel">Rate / Gram (With GST)</div>
               <div class="calculator-summary-value" id="summaryRate">—</div>
@@ -2865,8 +2890,19 @@
               <div class="calculator-summary-value" id="summaryFinal">—</div>
             </div>
             <div class="calculator-summary-item">
-              <div class="calculator-summary-label">Total Metal You Get</div>
+              <div class="calculator-summary-label" id="summaryGramsLabel">Total Metal You Get</div>
               <div class="calculator-summary-value" id="summaryGrams">—</div>
+            </div>
+            <!-- Sell-mode loss cards (hidden by default) -->
+            <div id="sellLossCards" style="display:none; flex-direction:column; gap:12px; margin-top:12px;">
+              <div class="calculator-summary-item" style="background:linear-gradient(145deg,#ffebee,#ffcdd2) !important; border:1px solid #ef5350 !important; box-shadow:0 8px 18px rgba(198,40,40,0.18) !important;">
+                <div class="calculator-summary-label" style="color:#b71c1c !important;">Your Resale Loss</div>
+                <div class="calculator-summary-value" id="summaryLoss" style="color:#c62828 !important;">—</div>
+              </div>
+              <div class="calculator-summary-item" style="background:linear-gradient(145deg,#fff3e0,#ffe0b2) !important; border:1px solid #ffa726 !important; box-shadow:0 8px 18px rgba(230,81,0,0.18) !important;">
+                <div class="calculator-summary-label" style="color:#e65100 !important;">Loss Percentage</div>
+                <div class="calculator-summary-value" id="summaryLossPct" style="color:#e65100 !important;">—</div>
+              </div>
             </div>
           </div>
         </div>
@@ -3902,6 +3938,54 @@ const CITY_SURCHARGE = { '0':0,'200':200,'180':180,'150':150,'160':160,'140':140
 let currentPurity = '24K';
 let selectedGoldPurity = '24K';
 let calcMode = 'weight';
+let tradeMode = 'buy';
+
+function setTradeMode(mode) {
+  tradeMode = mode;
+  const buyBtn = document.getElementById('modeBuy');
+  const sellBtn = document.getElementById('modeSell');
+  const isBuy = mode === 'buy';
+
+  if (buyBtn) {
+    buyBtn.style.background = isBuy ? 'linear-gradient(135deg,#1a7a4c,#22995e)' : '#FFF8E7';
+    buyBtn.style.color      = isBuy ? '#fff' : 'var(--dark)';
+    buyBtn.style.borderColor = isBuy ? 'transparent' : 'var(--card)';
+  }
+  if (sellBtn) {
+    sellBtn.style.background = !isBuy ? 'linear-gradient(135deg,#c62828,#e53935)' : '#FFF8E7';
+    sellBtn.style.color      = !isBuy ? '#fff' : 'var(--dark)';
+    sellBtn.style.borderColor = !isBuy ? 'transparent' : 'var(--card)';
+  }
+
+  // Update making charge label for context
+  const makingLabel = document.getElementById('makingLabel');
+  if (makingLabel) makingLabel.textContent = isBuy ? 'Making Charge (%)' : 'Original Making Charge Paid (%)';
+
+  // Toggle rows
+  const deductionRow = document.getElementById('deductionRow');
+  if (deductionRow) deductionRow.style.display = isBuy ? 'none' : 'block';
+
+  const gstRow = document.getElementById('gstRow');
+  if (gstRow) gstRow.style.display = isBuy ? 'flex' : 'none';
+
+  const cityRow = document.getElementById('cityRow');
+  if (cityRow) cityRow.style.display = isBuy ? 'block' : 'none';
+
+  // In Sell mode, measurement is by weight
+  const calcModeBar = document.getElementById('calcModeBar');
+  if (calcModeBar) calcModeBar.style.display = isBuy ? 'flex' : 'none';
+  if (!isBuy) {
+    calcMode = 'weight';
+    document.getElementById('weightRow').style.display = 'block';
+    document.getElementById('amountRow').style.display = 'none';
+  }
+
+  // Show/hide sell loss cards in estimate panel
+  const sellLossCards = document.getElementById('sellLossCards');
+  if (sellLossCards) sellLossCards.style.display = isBuy ? 'none' : 'flex';
+
+  recalc();
+}
 
 function setMetal(metal) {
   const isSilver = metal === 'SILVER';
@@ -3947,6 +4031,8 @@ function syncInput()        { document.getElementById('qtyInput').value     = do
 function syncMakingSlider() { document.getElementById('makingSlider').value = document.getElementById('makingInput').value; }
 function syncMakingInput()  { document.getElementById('makingInput').value  = document.getElementById('makingSlider').value; }
 function syncAmtInput()     { document.getElementById('amtInput').value     = document.getElementById('amtSlider').value; }
+function syncDeductionSlider() { document.getElementById('deductionSlider').value = document.getElementById('deductionInput').value; }
+function syncDeductionInput()  { document.getElementById('deductionInput').value  = document.getElementById('deductionSlider').value; }
 
 function recalc() {
   const ratePerGram   = currentPurity === 'SILVER' ? SILVER_RATE : GOLD_RATES[currentPurity];
@@ -3955,6 +4041,7 @@ function recalc() {
   const includeGST    = document.getElementById('gstCheck')?.checked;
   const cityVal       = document.getElementById('citySelect')?.value || '0';
   const surchargePerG = (CITY_SURCHARGE[cityVal] || 0) / 10;
+  const deductionPct  = parseFloat(document.getElementById('deductionInput')?.value) || 0;
   let weightGrams, baseValue, makingCharge, subtotal, gst, total;
 
   const rl = document.getElementById('rateLabel');
@@ -3967,6 +4054,10 @@ function recalc() {
   const summaryFinal = document.getElementById('summaryFinal');
   const summaryFinalLabel = document.getElementById('summaryFinalLabel');
   const summaryGrams = document.getElementById('summaryGrams');
+  const summaryGramsLabel = document.getElementById('summaryGramsLabel');
+  const summaryTitle = document.getElementById('summaryTitle');
+  const summaryLoss = document.getElementById('summaryLoss');
+  const summaryLossPct = document.getElementById('summaryLossPct');
 
   if (rl) rl.textContent = rateName + ' Rate';
   if (ratePerGram == null) {
@@ -3976,6 +4067,8 @@ function recalc() {
     if (summaryRate) summaryRate.textContent = '—';
     if (summaryFinal) summaryFinal.textContent = '—';
     if (summaryGrams) summaryGrams.textContent = '—';
+    if (summaryLoss) summaryLoss.textContent = '—';
+    if (summaryLossPct) summaryLossPct.textContent = '—';
     if (br) {
       br.innerHTML = `
         <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,215,122,0.1);">
@@ -3985,57 +4078,131 @@ function recalc() {
     return;
   }
 
-  if (calcMode === 'weight') {
+  if (tradeMode === 'sell') {
+    // ── SELL MODE ──
     const qty  = parseFloat(document.getElementById('qtyInput')?.value) || 0;
     const unit = parseFloat(document.getElementById('unitSel')?.value)  || 1;
     weightGrams  = qty * unit;
-    baseValue    = weightGrams * (ratePerGram + surchargePerG);
-    makingCharge = baseValue * (makingPct / 100);
-    subtotal     = baseValue + makingCharge;
-    gst          = includeGST ? subtotal * 0.03 : 0;
-    total        = subtotal + gst;
+    const goldValue = weightGrams * ratePerGram;
+    const deduction = goldValue * (deductionPct / 100);
+    const sellAmount = goldValue - deduction;
+
+    // Also compute what buying the same weight would have cost
+    const buyBase = weightGrams * (ratePerGram + surchargePerG);
+    const buyMaking = buyBase * (makingPct / 100);
+    const buySubtotal = buyBase + buyMaking;
+    const buyGst = buySubtotal * 0.03;
+    const buyTotal = buySubtotal + buyGst;
+    const loss = buyTotal - sellAmount;
+    const lossPctVal = buyTotal > 0 ? (loss / buyTotal) * 100 : 0;
+
+    if (rd) rd.textContent = '₹' + ratePerGram.toLocaleString('en-IN') + '/gram';
+    if (td) td.textContent = inrFmt(sellAmount);
+    if (ts) ts.textContent = shortFmt(sellAmount);
+
+    const totalTitle = document.getElementById('totalTitle');
+    if (totalTitle) totalTitle.textContent = 'Amount You Receive';
+    const totalShortLabel = document.getElementById('totalShortLabel');
+    if (totalShortLabel) totalShortLabel.textContent = 'Amount You Receive';
+
+    const sellEffRate = weightGrams > 0 ? (sellAmount / weightGrams) : 0;
+    if (summaryRate) summaryRate.textContent = sellEffRate > 0 ? inrDec(sellEffRate) + '/g' : '—';
+    if (summaryFinal) summaryFinal.textContent = inrFmt(sellAmount);
+    if (summaryGrams) summaryGrams.textContent = weightGrams.toFixed(3) + ' g';
+    if (summaryLoss) summaryLoss.textContent = loss > 0 ? '−' + inrFmt(loss) : inrFmt(Math.abs(loss));
+    if (summaryLossPct) summaryLossPct.textContent = lossPctVal.toFixed(1) + '%';
+
+    if (summaryTitle) summaryTitle.textContent = 'Selling Estimate';
+    if (summaryRateLabel) summaryRateLabel.textContent = 'Sell Rate / Gram';
+    if (summaryFinalLabel) summaryFinalLabel.textContent = 'Amount You Receive';
+    if (summaryGramsLabel) summaryGramsLabel.textContent = 'Weight You Sell';
+
+    if (rl) rl.textContent = rateName + ' Sell Rate';
+
+    const metalValLabel = currentPurity === 'SILVER' ? 'Silver Value' : 'Gold Value';
+    const rows = [
+      { label:'Weight',                                   val: weightGrams.toFixed(3) + ' grams' },
+      { label:rateName + ' Rate',                         val: inrFmt(ratePerGram) + '/g' },
+      { label:metalValLabel,                              val: inrFmt(goldValue) },
+      { label:'Purity/Melting Deduction (' + deductionPct + '%)', val: '−' + inrFmt(deduction) },
+      { label:'Amount You Receive',                       val: inrFmt(sellAmount), bold: true },
+      { label:'', val:'', spacer: true },
+      { label:'Buying Cost with Making & GST (est.)',     val: inrFmt(buyTotal) },
+      { label:'Your Resale Loss',                         val: '−' + inrFmt(loss), bold: true, loss: true },
+      { label:'Loss Percentage',                          val: lossPctVal.toFixed(1) + '%', loss: true },
+    ].filter(Boolean);
+
+    if (br) br.innerHTML = rows.map(r => {
+      if (r.spacer) return '<div style="border-bottom:2px solid rgba(255,215,122,0.3);margin:6px 0;"></div>';
+      const color = r.loss ? '#ff8a80' : '#fff';
+      return `
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid rgba(255,215,122,0.1);">
+        <span style="color:${color};font-weight:${r.bold?700:500};font-size:${r.bold?'13px':'12px'};">${r.label}</span>
+        <span style="color:${color};font-family:'Cinzel',serif;font-weight:${r.bold?700:600};font-size:${r.bold?'14px':'13px'};">${r.val}</span>
+      </div>`;
+    }).join('');
+
   } else {
-    const amt  = parseFloat(document.getElementById('amtInput')?.value) || 0;
-    const div  = includeGST ? (1 + makingPct/100) * 1.03 : (1 + makingPct/100);
-    baseValue    = amt / div;
-    weightGrams  = baseValue / (ratePerGram + surchargePerG);
-    makingCharge = baseValue * (makingPct / 100);
-    subtotal     = baseValue + makingCharge;
-    gst          = includeGST ? subtotal * 0.03 : 0;
-    total        = subtotal + gst;
+    // ── BUY MODE ──
+    if (calcMode === 'weight') {
+      const qty  = parseFloat(document.getElementById('qtyInput')?.value) || 0;
+      const unit = parseFloat(document.getElementById('unitSel')?.value)  || 1;
+      weightGrams  = qty * unit;
+      baseValue    = weightGrams * (ratePerGram + surchargePerG);
+      makingCharge = baseValue * (makingPct / 100);
+      subtotal     = baseValue + makingCharge;
+      gst          = includeGST ? subtotal * 0.03 : 0;
+      total        = subtotal + gst;
+    } else {
+      const amt  = parseFloat(document.getElementById('amtInput')?.value) || 0;
+      const div  = includeGST ? (1 + makingPct/100) * 1.03 : (1 + makingPct/100);
+      baseValue    = amt / div;
+      weightGrams  = baseValue / (ratePerGram + surchargePerG);
+      makingCharge = baseValue * (makingPct / 100);
+      subtotal     = baseValue + makingCharge;
+      gst          = includeGST ? subtotal * 0.03 : 0;
+      total        = subtotal + gst;
+    }
+
+    const effectiveRate = (weightGrams > 0 && total > 0) ? (total / weightGrams) : 0;
+
+    if (rd) rd.textContent = '₹' + ratePerGram.toLocaleString('en-IN') + '/gram';
+    if (td) td.textContent = inrFmt(total);
+    if (ts) ts.textContent = shortFmt(total);
+
+    const totalTitle = document.getElementById('totalTitle');
+    if (totalTitle) totalTitle.textContent = 'Total Amount';
+    const totalShortLabel = document.getElementById('totalShortLabel');
+    if (totalShortLabel) totalShortLabel.textContent = 'Total Amount';
+    if (summaryRate) summaryRate.textContent = effectiveRate > 0 ? inrDec(effectiveRate) + '/g' : '—';
+    if (summaryFinal) summaryFinal.textContent = inrFmt(total);
+    if (summaryGrams) summaryGrams.textContent = weightGrams.toFixed(3) + ' g';
+
+    if (summaryTitle) summaryTitle.textContent = 'Your Estimate';
+    if (summaryRateLabel) {
+      summaryRateLabel.textContent = includeGST ? 'Rate / Gram (With GST)' : 'Rate / Gram (Excl. GST)';
+    }
+    if (summaryFinalLabel) {
+      summaryFinalLabel.textContent = includeGST ? 'Final Amount With GST' : 'Final Amount (Excl. GST)';
+    }
+    if (summaryGramsLabel) summaryGramsLabel.textContent = 'Total Metal You Get';
+
+    const rows = [
+      { label:'Weight',                              val: weightGrams.toFixed(3) + ' grams' },
+      { label:'Rate (' + rateName + ')',               val: inrFmt(ratePerGram) + '/g' },
+      surchargePerG > 0 ? { label:'City Premium',    val: inrFmt(surchargePerG) + '/g' } : null,
+      { label:'Base Value',                           val: inrFmt(baseValue) },
+      { label:'Making Charges (' + makingPct + '%)', val: inrFmt(makingCharge) },
+      { label:'Subtotal',                             val: inrFmt(subtotal), bold: true },
+      includeGST ? { label:'GST (3%)',               val: inrFmt(gst) } : null,
+    ].filter(Boolean);
+
+    if (br) br.innerHTML = rows.map(r => `
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid rgba(255,215,122,0.1);">
+        <span style="color:#fff;font-weight:${r.bold?700:500};font-size:${r.bold?'13px':'12px'};">${r.label}</span>
+        <span style="color:#fff;font-family:'Cinzel',serif;font-weight:${r.bold?700:600};font-size:${r.bold?'14px':'13px'};">${r.val}</span>
+      </div>`).join('');
   }
-
-  const effectiveRate = (weightGrams > 0 && total > 0) ? (total / weightGrams) : 0;
-
-  if (rd) rd.textContent = '₹' + ratePerGram.toLocaleString('en-IN') + '/gram';
-  if (td) td.textContent = inrFmt(total);
-  if (ts) ts.textContent = shortFmt(total);
-  if (summaryRate) summaryRate.textContent = effectiveRate > 0 ? inrDec(effectiveRate) + '/g' : '—';
-  if (summaryFinal) summaryFinal.textContent = inrFmt(total);
-  if (summaryGrams) summaryGrams.textContent = weightGrams.toFixed(3) + ' g';
-
-  if (summaryRateLabel) {
-    summaryRateLabel.textContent = includeGST ? 'Rate / Gram (With GST)' : 'Rate / Gram (Excl. GST)';
-  }
-  if (summaryFinalLabel) {
-    summaryFinalLabel.textContent = includeGST ? 'Final Amount With GST' : 'Final Amount (Excl. GST)';
-  }
-
-  const rows = [
-    { label:'Weight',                              val: weightGrams.toFixed(3) + ' grams' },
-    { label:'Rate (' + rateName + ')',               val: inrFmt(ratePerGram) + '/g' },
-    surchargePerG > 0 ? { label:'City Premium',    val: inrFmt(surchargePerG) + '/g' } : null,
-    { label:'Base Value',                           val: inrFmt(baseValue) },
-    { label:'Making Charges (' + makingPct + '%)', val: inrFmt(makingCharge) },
-    { label:'Subtotal',                             val: inrFmt(subtotal), bold: true },
-    includeGST ? { label:'GST (3%)',               val: inrFmt(gst) } : null,
-  ].filter(Boolean);
-
-  if (br) br.innerHTML = rows.map(r => `
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid rgba(255,215,122,0.1);">
-      <span style="color:#fff;font-weight:${r.bold?700:500};font-size:${r.bold?'13px':'12px'};">${r.label}</span>
-      <span style="color:#fff;font-family:'Cinzel',serif;font-weight:${r.bold?700:600};font-size:${r.bold?'14px':'13px'};">${r.val}</span>
-    </div>`).join('');
 }
 
 // ── CONSTRUCTION CALCULATOR ─────────────────────────────
